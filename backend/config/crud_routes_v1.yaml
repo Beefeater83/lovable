@@ -1,0 +1,8 @@
+resources:
+  products:
+    entity: App\Entity\Product
+    operations: [C, R, U, D, L, P]
+    path: /products
+    export: true
+    requirements:
+      id: !php/const Symfony\Component\Routing\Requirement\Requirement::DIGITS
