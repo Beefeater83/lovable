@@ -33,9 +33,25 @@ class Product
     #[Groups(['create', 'update', 'patch'])]
     private string $imagePath;
 
+    #[ORM\Column(length: 100)]
+    #[Groups(['create', 'update', 'patch'])]
+    private string $category;
+
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getCategory(): string
+    {
+        return $this->category;
+    }
+
+    public function setCategory(string $category): static
+    {
+        $this->category = $category;
+
+        return $this;
     }
 
     public function setId(?int $id): static

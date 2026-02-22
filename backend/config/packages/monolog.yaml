@@ -1,6 +1,7 @@
 monolog:
     channels:
         - deprecation # Deprecations are logged in the dedicated "deprecation" channel when it exists
+        - crud_event
 
 when@dev:
     monolog:
@@ -14,6 +15,12 @@ when@dev:
                 type: console
                 process_psr_3_messages: false
                 channels: ["!event", "!doctrine", "!console"]
+            crud_event:
+                type: rotating_file
+                path: "%kernel.logs_dir%/crud_event.log"
+                level: debug
+                max_files: 10
+                channels: [ "crud_event" ]
 
 when@test:
     monolog:
@@ -28,6 +35,11 @@ when@test:
                 type: stream
                 path: "%kernel.logs_dir%/%kernel.environment%.log"
                 level: debug
+            crud_event:
+                type: stream
+                path: "%kernel.logs_dir%/crud_event_test.log"
+                level: debug
+                channels: [ "crud_event" ]
 
 when@prod:
     monolog:
@@ -53,3 +65,9 @@ when@prod:
                 channels: [deprecation]
                 path: php://stderr
                 formatter: monolog.formatter.json
+            crud_event:
+                type: rotating_file
+                path: "%kernel.logs_dir%/crud_event.log"
+                level: debug
+                max_files: 10
+                channels: [ "crud_event" ]
