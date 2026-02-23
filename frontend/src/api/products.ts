@@ -14,7 +14,6 @@ export interface ProductsResponse {
     total: number
 }
 
-// простой fetch к backend через Vite proxy
 export const getProducts = async (): Promise<ProductsResponse> => {
     const res = await fetch('/api/products')
     if (!res.ok) throw new Error('Failed to fetch products')
