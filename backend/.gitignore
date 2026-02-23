@@ -21,3 +21,5 @@ vendor/
 /public/assets/
 /assets/vendor/
 ###< symfony/asset-mapper ###
+
+composer.phar
