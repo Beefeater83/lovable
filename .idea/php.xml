@@ -147,6 +147,7 @@
       <path value="$PROJECT_DIR$/backend/vendor/phpunit/php-invoker" />
       <path value="$PROJECT_DIR$/backend/vendor/phpunit/php-file-iterator" />
       <path value="$PROJECT_DIR$/backend/vendor/staabm/side-effects-detector" />
+      <path value="$PROJECT_DIR$/backend/vendor/nelmio/cors-bundle" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="8.2">
