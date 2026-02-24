@@ -1,52 +1,61 @@
 const API_BASE = 'http://localhost:8000';
 const PRODUCTS_URL = `${API_BASE}/api/products`;
-const elements = {
-    grid: document.getElementById('products-grid'),
-    loading: document.getElementById('loading'),
-    error: document.getElementById('error'),
-};
-function createProductCard(product) {
-    const imageUrl = `${API_BASE}${product.imagePath}`;
-    const price = `$${product.price.toFixed(2)}`;
-    const card = document.createElement('article');
-    card.className = 'product-card';
-    card.innerHTML = `
-    <div class="product-card__image-wrapper">
-      <img class="product-card__image" src="${imageUrl}" alt="${product.name}" loading="lazy">
-    </div>
-    <div class="product-card__body">
-      <span class="product-card__category">${product.category}</span>
-      <h2 class="product-card__name">${product.name}</h2>
-      <p class="product-card__price">${price}</p>
-    </div>
-  `;
-    return card;
-}
-function renderProducts(products) {
-    elements.grid.innerHTML = '';
-    products.forEach((product) => {
-        elements.grid.appendChild(createProductCard(product));
+const categories = [
+    { label: 'All', value: null },
+    { label: 'Phones', value: 'phone' },
+    { label: 'Notebooks', value: 'notebook' },
+    { label: 'Headphones', value: 'headphones' },
+];
+let activeCategory = null;
+const grid = document.getElementById('product-grid');
+const filterBar = document.getElementById('filter-bar');
+function renderFilters() {
+    filterBar.innerHTML = '';
+    categories.forEach(({ label, value }) => {
+        const btn = document.createElement('button');
+        btn.className = `filter-btn${activeCategory === value ? ' active' : ''}`;
+        btn.textContent = label;
+        btn.addEventListener('click', () => {
+            activeCategory = value;
+            renderFilters();
+            fetchProducts();
+        });
+        filterBar.appendChild(btn);
     });
 }
-function showLoading(show) {
-    elements.loading.style.display = show ? 'block' : 'none';
+function buildUrl() {
+    if (!activeCategory) return PRODUCTS_URL;
+    return `${PRODUCTS_URL}?filter[category][eq]=${encodeURIComponent(activeCategory)}`;
 }
-function showError(show) {
-    elements.error.style.display = show ? 'block' : 'none';
+function showMessage(text, isError = false) {
+    grid.innerHTML = `<div class="message${isError ? ' error' : ''}">${text}</div>`;
+}
+function renderProducts(items) {
+    if (!items.length) {
+        showMessage('No products found.');
+        return;
+    }
+    grid.innerHTML = items.map(p => `
+    <div class="product-card">
+      <img src="${API_BASE}${p.imagePath}" alt="${p.name}" loading="lazy" />
+      <div class="product-info">
+        <div class="product-category">${p.category}</div>
+        <div class="product-name">${p.name}</div>
+        <div class="product-price">$${Number(p.price).toFixed(2)}</div>
+      </div>
+    </div>
+  `).join('');
 }
 async function fetchProducts() {
-    showLoading(true);
-    showError(false);
+    showMessage('Loading…');
     try {
-        const response = await fetch(PRODUCTS_URL);
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        const data = await response.json();
-        renderProducts(data.items);
+        const res = await fetch(buildUrl());
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        renderProducts(data.items || []);
     } catch (err) {
-        console.error('Failed to fetch products:', err);
-        showError(true);
-    } finally {
-        showLoading(false);
+        showMessage(`Error loading products: ${err.message}`, true);
     }
 }
-document.addEventListener('DOMContentLoaded', fetchProducts);
+renderFilters();
+fetchProducts();
