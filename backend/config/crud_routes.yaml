@@ -1,7 +1,7 @@
 resources:
   products:
     entity: App\Entity\Product
-    operations: [C, R, U, D, L, P]
+    operations: [R, D, L, P]
     path: /products
     export: true
     requirements:

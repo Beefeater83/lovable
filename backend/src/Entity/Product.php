@@ -20,21 +20,21 @@ class Product
     private ?int $id = null;
 
     #[ORM\Column(length: 255, nullable: false)]
-    #[Assert\NotBlank(groups: ['create', 'update', 'patch'])]
-    #[Groups(['create', 'update', 'patch'])]
+    #[Assert\NotBlank(groups: ['create', 'patch'])]
+    #[Groups(['create', 'patch'])]
     private string $name;
 
     #[ORM\Column(name: "price", type: Types::FLOAT, nullable: false)]
-    #[Assert\NotBlank(groups: ['create', 'update', 'patch'])]
-    #[Groups(['create', 'update', 'patch'])]
+    #[Assert\NotBlank(groups: ['create', 'patch'])]
+    #[Groups(['create', 'patch'])]
     private float $price;
 
     #[ORM\Column(length: 255, nullable: false)]
-    #[Groups(['create', 'update', 'patch'])]
+    #[Groups(['create', 'patch'])]
     private string $imagePath;
 
     #[ORM\Column(length: 100)]
-    #[Groups(['create', 'update', 'patch'])]
+    #[Groups(['create', 'patch'])]
     private string $category;
 
     public function getId(): ?int

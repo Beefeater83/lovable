@@ -1,3 +1,6 @@
-crud_api_v1:
-    resource: '%kernel.project_dir%/config/crud_routes_v1.yaml'
+crud_api:
+    resource: '%kernel.project_dir%/config/crud_routes.yaml'
     type: crud_routes
+
+api:
+    resource: routes/api.yaml

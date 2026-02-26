@@ -1,0 +1,6 @@
+api_v1:
+  prefix: /api
+  resource:
+    path: ../../src/Controller/Api/
+    namespace: App\Controller\Api\
+  type: attribute
