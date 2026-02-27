@@ -60,7 +60,7 @@ function renderProducts(items) {
     elements.grid.innerHTML = items
         .map(p => `
       <div class="product-card">
-        <img src="${API_BASE}${p.imagePath}" alt="${p.name}" loading="lazy" />
+        <img src="${API_BASE}/uploads/products/${p.imagePath}" alt="${p.name}" loading="lazy" />
         <div class="product-info">
           <div class="product-category">${p.category}</div>
           <div class="product-name">${p.name}</div>

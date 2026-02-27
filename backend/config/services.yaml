@@ -28,3 +28,11 @@ services:
     App\EventListener\ResourceNotFoundExceptionListener:
         tags:
             - { name: kernel.event_listener, event: kernel.exception }
+
+    App\Services\ImageStorageService:
+        arguments:
+            $uploadDir: '%upload_dir%'
+
+    App\EventListener\ProductDeleteListener:
+        tags:
+            - { name: kernel.event_listener, event: 'products.delete.after_remove',  method: onAfterDelete }

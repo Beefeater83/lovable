@@ -42,7 +42,7 @@ function renderRow(p) {
 
     return `
     <div class="admin-row">
-      <img src="${API_BASE}${p.imagePath}" />
+      <img src="${API_BASE}/uploads/products/${p.imagePath}" />
       ${isEditing
         ? `<input class="admin-input name-input" value="${p.name}" data-id="${p.id}" />`
         : `<div class="admin-name">${p.name}</div>`}

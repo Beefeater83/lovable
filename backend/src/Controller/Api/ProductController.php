@@ -6,6 +6,7 @@ namespace App\Controller\Api;
 
 use App\Entity\Product;
 use App\Repository\ProductRepository;
+use App\Services\ImageStorageService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -18,14 +19,18 @@ class ProductController extends CrudController
     private ProductRepository $productRepository;
     private ValidatorInterface $validator;
 
+    private ImageStorageService $imageStorageService;
+
     public function __construct(
         ProductRepository $productRepository,
         EntityManagerInterface $entityManager,
         ValidatorInterface $validator,
+        ImageStorageService $imageStorageService
     ) {
         parent::__construct($productRepository, $entityManager);
         $this->productRepository = $productRepository;
         $this->validator = $validator;
+        $this->imageStorageService = $imageStorageService;
     }
 
     #[Route('/products', methods: ['POST'])]
@@ -47,15 +52,13 @@ class ProductController extends CrudController
             return new Response('Invalid image type', Response::HTTP_BAD_REQUEST);
         }
 
-        $uploadsDir = $this->getParameter('upload_dir');
-        $newFilename = uniqid() . '.' . $imageFile->guessExtension();
-        $imageFile->move($uploadsDir, $newFilename);
+        $newFilename = $this->imageStorageService->upload($imageFile);
 
         $product = (new Product())
             ->setName($name)
             ->setCategory($category)
             ->setPrice((float)$price)
-            ->setImagePath('/uploads/products/' . $newFilename);
+            ->setImagePath($newFilename);
 
         parent::validate($this->validator, $product, "create");
         parent::saveEntity($product);
