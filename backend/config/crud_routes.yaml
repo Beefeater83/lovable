@@ -6,3 +6,16 @@ resources:
     export: true
     requirements:
       id: !php/const Symfony\Component\Routing\Requirement\Requirement::DIGITS
+
+  users:
+    entity: App\Entity\User
+    operations: [ C, R, D, L, P ]
+    path: /users
+    requirements:
+      id: !php/const Symfony\Component\Routing\Requirement\Requirement::DIGITS
+    security:
+      C: [ ROLE_ADMIN ]
+      P: [ ROLE_ADMIN ]
+      D: [ ROLE_ADMIN ]
+      L: [ ROLE_ADMIN ]
+      R: [ ROLE_ADMIN ]
