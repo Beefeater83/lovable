@@ -140,6 +140,8 @@
       <excludeFolder url="file://$MODULE_DIR$/backend/vendor/twig/twig" />
       <excludeFolder url="file://$MODULE_DIR$/backend/vendor/webmozart/assert" />
       <excludeFolder url="file://$MODULE_DIR$/backend/vendor/nelmio/cors-bundle" />
+      <excludeFolder url="file://$MODULE_DIR$/backend/vendor/lcobucci/jwt" />
+      <excludeFolder url="file://$MODULE_DIR$/backend/vendor/lexik/jwt-authentication-bundle" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

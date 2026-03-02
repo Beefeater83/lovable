@@ -108,7 +108,6 @@ async function deleteProduct(id) {
     fetchProducts();
 }
 
-// -------------------- Добавление --------------------
 function startAdd(category) {
     addingCategory = category;
     fetchProducts();
@@ -141,6 +140,30 @@ async function saveAdd(category) {
 
     addingCategory = null;
     fetchProducts();
+}
+
+async function exportXlsx() {
+    const response = await fetch(PRODUCTS_URL, {
+        headers: {
+            'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        }
+    });
+
+    if (!response.ok) {
+        alert('Export failed');
+        return;
+    }
+
+    const blob = await response.blob();
+
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'products.xlsx';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(url);
 }
 
 fetchProducts();
