@@ -43,7 +43,6 @@
       <path value="$PROJECT_DIR$/backend/vendor/doctrine/inflector" />
       <path value="$PROJECT_DIR$/backend/vendor/symfony/event-dispatcher-contracts" />
       <path value="$PROJECT_DIR$/backend/vendor/doctrine/migrations" />
-      <path value="$PROJECT_DIR$/backend/vendor/symfony/security-core" />
       <path value="$PROJECT_DIR$/backend/vendor/doctrine/persistence" />
       <path value="$PROJECT_DIR$/backend/vendor/symfony/property-access" />
       <path value="$PROJECT_DIR$/backend/vendor/doctrine/sql-formatter" />
@@ -60,15 +59,12 @@
       <path value="$PROJECT_DIR$/backend/vendor/monolog/monolog" />
       <path value="$PROJECT_DIR$/backend/vendor/symfony/options-resolver" />
       <path value="$PROJECT_DIR$/backend/vendor/symfony/event-dispatcher" />
-      <path value="$PROJECT_DIR$/backend/vendor/symfony/password-hasher" />
       <path value="$PROJECT_DIR$/backend/vendor/symfony/flex" />
       <path value="$PROJECT_DIR$/backend/vendor/symfony/stopwatch" />
       <path value="$PROJECT_DIR$/backend/vendor/doctrine/doctrine-migrations-bundle" />
-      <path value="$PROJECT_DIR$/backend/vendor/symfony/security-csrf" />
       <path value="$PROJECT_DIR$/backend/vendor/symfony/web-link" />
       <path value="$PROJECT_DIR$/backend/vendor/symfony/type-info" />
       <path value="$PROJECT_DIR$/backend/vendor/symfony/service-contracts" />
-      <path value="$PROJECT_DIR$/backend/vendor/symfony/security-bundle" />
       <path value="$PROJECT_DIR$/backend/vendor/symfony/dom-crawler" />
       <path value="$PROJECT_DIR$/backend/vendor/symfony/translation-contracts" />
       <path value="$PROJECT_DIR$/backend/vendor/symfony/framework-bundle" />
@@ -81,7 +77,6 @@
       <path value="$PROJECT_DIR$/backend/vendor/symfony/polyfill-php84" />
       <path value="$PROJECT_DIR$/backend/vendor/symfony/translation" />
       <path value="$PROJECT_DIR$/backend/vendor/symfony/stimulus-bundle" />
-      <path value="$PROJECT_DIR$/backend/vendor/symfony/security-http" />
       <path value="$PROJECT_DIR$/backend/vendor/symfony/mailer" />
       <path value="$PROJECT_DIR$/backend/vendor/phpstan/phpdoc-parser" />
       <path value="$PROJECT_DIR$/backend/vendor/symfony/dependency-injection" />
@@ -148,8 +143,6 @@
       <path value="$PROJECT_DIR$/backend/vendor/phpunit/php-file-iterator" />
       <path value="$PROJECT_DIR$/backend/vendor/staabm/side-effects-detector" />
       <path value="$PROJECT_DIR$/backend/vendor/nelmio/cors-bundle" />
-      <path value="$PROJECT_DIR$/backend/vendor/lexik/jwt-authentication-bundle" />
-      <path value="$PROJECT_DIR$/backend/vendor/lcobucci/jwt" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="8.2">

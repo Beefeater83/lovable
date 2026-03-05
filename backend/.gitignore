@@ -1,4 +1,3 @@
-
 ###> symfony/framework-bundle ###
 .env
 .env.local
@@ -23,7 +22,3 @@ vendor/
 ###< symfony/asset-mapper ###
 
 composer.phar
-
-###> lexik/jwt-authentication-bundle ###
-/config/jwt/*.pem
-###< lexik/jwt-authentication-bundle ###
