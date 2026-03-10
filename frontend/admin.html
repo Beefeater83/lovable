@@ -11,9 +11,12 @@
     <div class="top-bar">
         <a href="index.html" class="admin-link">Back</a>
         <button class="admin-link" onclick="exportXlsx()">Export XLSX</button>
+        <button class="admin-link" onclick="loginAdmin()">Authenticate</button>
     </div>
 
     <h1>Admin Panel</h1>
+
+    <div id="admin-error" style="color:red; margin-bottom:10px;"></div>
 
     <div id="admin-content"></div>
 </div>
