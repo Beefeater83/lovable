@@ -15,7 +15,8 @@ security:
         main:
             lazy: true
             provider: session_user_provider
-            custom_authenticator: App\Security\UserAuthenticator
+            custom_authenticator: App\Security\GoogleAuthenticator
+            # custom_authenticator: App\Security\UserAuthenticator
             stateless: false
 
             # activate different ways to authenticate

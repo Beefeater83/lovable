@@ -204,7 +204,7 @@ function showError(message) {
 function clearError() {
     errorDiv.textContent = '';
 }
-
+/* authentication without google
 async function loginAdmin() {
     clearError();
 
@@ -225,6 +225,10 @@ async function loginAdmin() {
 
     showError('Logged in as admin');
     fetchProducts();
+}
+*/
+function loginWithGoogle() {
+    window.location.href = `${API_BASE}/connect/google`;
 }
 
 async function logoutAdmin() {
