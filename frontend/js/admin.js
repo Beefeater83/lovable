@@ -154,7 +154,11 @@ async function saveAdd(category) {
     formData.append('category', category);
     formData.append('image', file);
 
-    const res = await fetch(PRODUCTS_URL, { method: 'POST', body: formData });
+    const res = await fetch(PRODUCTS_URL, {
+        method: 'POST',
+        body: formData,
+        credentials: 'include'
+    });
 
     if (res.status === 403) {
         showError('You are not admin');
@@ -168,6 +172,7 @@ async function saveAdd(category) {
 
 async function exportXlsx() {
     const response = await fetch(PRODUCTS_URL, {
+        credentials: 'include',
         headers: {
             'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         }
@@ -220,6 +225,20 @@ async function loginAdmin() {
 
     showError('Logged in as admin');
     fetchProducts();
+}
+
+async function logoutAdmin() {
+    const res = await fetch(`${API_BASE}/api/admin/logout`, {
+        method: 'POST',
+        credentials: 'include'
+    });
+
+    if (!res.ok) {
+        showError('Logout failed');
+        return;
+    }
+
+    showError('Logged out');
 }
 
 fetchProducts();
