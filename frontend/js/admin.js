@@ -85,6 +85,7 @@ function cancelEdit() {
 }
 
 async function saveEdit(id) {
+    clearError();
     const nameInput = document.querySelector(`.name-input[data-id="${id}"]`);
     const priceInput = document.querySelector(`.price-input[data-id="${id}"]`);
 
@@ -93,18 +94,34 @@ async function saveEdit(id) {
 
     if (!name || !price) return;
 
-    await fetch(`${PRODUCTS_URL}/${id}`, {
+    const res = await fetch(`${PRODUCTS_URL}/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, price })
+        body: JSON.stringify({ name, price }),
+        credentials: 'include'
     });
+
+    if (res.status === 403) {
+        showError('You are not admin');
+        cancelEdit();
+        return;
+    }
 
     editingId = null;
     fetchProducts();
 }
 
 async function deleteProduct(id) {
-    await fetch(`${PRODUCTS_URL}/${id}`, { method: 'DELETE' });
+    clearError();
+    const res = await fetch(`${PRODUCTS_URL}/${id}`, {
+        method: 'DELETE',
+        credentials: 'include'
+    });
+    if (res.status === 403) {
+        showError('You are not admin');
+        return;
+    }
+
     fetchProducts();
 }
 
@@ -119,6 +136,7 @@ function cancelAdd() {
 }
 
 async function saveAdd(category) {
+    clearError();
     const addRow = document.querySelector(`.admin-category:has(.file-input)`);
     const fileInput = addRow.querySelector('.file-input');
     const nameInput = addRow.querySelector('.name-input');
@@ -136,7 +154,17 @@ async function saveAdd(category) {
     formData.append('category', category);
     formData.append('image', file);
 
-    await fetch(PRODUCTS_URL, { method: 'POST', body: formData });
+    const res = await fetch(PRODUCTS_URL, {
+        method: 'POST',
+        body: formData,
+        credentials: 'include'
+    });
+
+    if (res.status === 403) {
+        showError('You are not admin');
+        cancelAdd();
+        return;
+    }
 
     addingCategory = null;
     fetchProducts();
@@ -144,6 +172,7 @@ async function saveAdd(category) {
 
 async function exportXlsx() {
     const response = await fetch(PRODUCTS_URL, {
+        credentials: 'include',
         headers: {
             'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         }
@@ -164,6 +193,52 @@ async function exportXlsx() {
     a.click();
     a.remove();
     window.URL.revokeObjectURL(url);
+}
+
+const errorDiv = document.getElementById('admin-error');
+
+function showError(message) {
+    errorDiv.textContent = message;
+}
+
+function clearError() {
+    errorDiv.textContent = '';
+}
+
+async function loginAdmin() {
+    clearError();
+
+    const res = await fetch(`${API_BASE}/api/admin/login`, {
+        method: 'POST',
+        credentials: 'include'
+    });
+
+    if (res.status === 403) {
+        showError('You are not admin or not found');
+        return;
+    }
+
+    if (!res.ok) {
+        showError('Login failed');
+        return;
+    }
+
+    showError('Logged in as admin');
+    fetchProducts();
+}
+
+async function logoutAdmin() {
+    const res = await fetch(`${API_BASE}/api/admin/logout`, {
+        method: 'POST',
+        credentials: 'include'
+    });
+
+    if (!res.ok) {
+        showError('Logout failed');
+        return;
+    }
+
+    showError('Logged out');
 }
 
 fetchProducts();

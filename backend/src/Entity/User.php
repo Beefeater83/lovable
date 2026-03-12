@@ -6,12 +6,13 @@ namespace App\Entity;
 
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: 'users')]
-class User
+class User implements UserInterface
 {
     public const ROLE_ADMIN = 'ROLE_ADMIN';
 
@@ -66,10 +67,7 @@ class User
 
     public function getRoles(): array
     {
-        $roles = $this->roles;
-        $roles[] = self::ROLE_ADMIN;
-
-        return array_unique($roles);
+        return array_unique($this->roles);
     }
 
     public function setRoles(array $roles): static
