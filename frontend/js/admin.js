@@ -228,7 +228,7 @@ async function loginAdmin() {
 }
 */
 function loginWithGoogle() {
-    window.location.href = `${API_BASE}/connect/google`;
+    window.location.href = `${API_BASE}/api/connect/google`;
 }
 
 async function logoutAdmin() {
