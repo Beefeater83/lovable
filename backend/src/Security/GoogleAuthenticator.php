@@ -8,7 +8,6 @@ use App\Repository\UserRepository;
 use KnpU\OAuth2ClientBundle\Security\Authenticator\OAuth2Authenticator;
 use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
 use League\OAuth2\Client\Provider\GoogleUser;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -48,16 +47,20 @@ class GoogleAuthenticator extends OAuth2Authenticator
 
     public function supports(Request $request): ?bool
     {
-        return $request->getPathInfo() === '/api/connect/google/check';
+        return $request->attributes->get('_route') === 'connect_google_check';
     }
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
-        return new JsonResponse(['status' => 'ok'], Response::HTTP_OK);
+        return new RedirectResponse(
+            'https://lovable.diakonov-it.com.ua/frontend/admin.html?login=success'
+        );
     }
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
     {
-        return new JsonResponse(['error' => 'Unauthorized'], Response::HTTP_UNAUTHORIZED);
+        return new RedirectResponse(
+            'https://lovable.diakonov-it.com.ua/frontend/admin.html?login=failed'
+        );
     }
 }

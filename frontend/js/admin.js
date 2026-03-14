@@ -227,6 +227,24 @@ async function loginAdmin() {
     fetchProducts();
 }
 */
+function checkLoginResult() {
+    const params = new URLSearchParams(window.location.search);
+    const login = params.get('login');
+
+    if (login === 'success') {
+        showError('Logged in as admin');
+        fetchProducts();
+    } else if (login === 'failed') {
+        showError('Login failed');
+    }
+
+    if (login) {
+        history.replaceState({}, '', window.location.pathname);
+    }
+}
+
+checkLoginResult();
+
 function loginWithGoogle() {
     window.location.href = `${API_BASE}/api/connect/google`;
 }
