@@ -205,26 +205,26 @@ function clearError() {
     errorDiv.textContent = '';
 }
 
-async function loginAdmin() {
-    clearError();
+function checkLoginResult() {
+    const params = new URLSearchParams(window.location.search);
+    const login = params.get('login');
 
-    const res = await fetch(`${API_BASE}/api/admin/login`, {
-        method: 'POST',
-        credentials: 'include'
-    });
-
-    if (res.status === 403) {
-        showError('You are not admin or not found');
-        return;
-    }
-
-    if (!res.ok) {
+    if (login === 'success') {
+        showError('Authenticated. Admin access will be checked per action.');
+        fetchProducts();
+    } else if (login === 'failed') {
         showError('Login failed');
-        return;
     }
 
-    showError('Logged in as admin');
-    fetchProducts();
+    if (login) {
+        history.replaceState({}, '', window.location.pathname);
+    }
+}
+
+checkLoginResult();
+
+function loginWithGoogle() {
+    window.location.href = `${API_BASE}/api/connect/google`;
 }
 
 async function logoutAdmin() {

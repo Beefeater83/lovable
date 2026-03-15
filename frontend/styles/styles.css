@@ -276,3 +276,27 @@ h1 {
         align-items: flex-start;
     }
 }
+
+@media (max-width: 640px) {
+    .top-bar {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .top-bar .admin-link {
+        display: block;
+        width: 100%;
+        text-align: center;
+        margin-bottom: 0.5rem;
+    }
+
+    .admin-row {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .admin-price {
+        width: 100%;
+    }
+}

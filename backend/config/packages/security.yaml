@@ -15,8 +15,10 @@ security:
         main:
             lazy: true
             provider: session_user_provider
-            custom_authenticator: App\Security\UserAuthenticator
+            custom_authenticator: App\Security\GoogleAuthenticator
             stateless: false
+    role_hierarchy:
+        ROLE_TRUSTED_USER: ROLE_ADMIN
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#the-firewall

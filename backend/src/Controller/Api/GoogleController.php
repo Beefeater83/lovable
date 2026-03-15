@@ -4,18 +4,26 @@ declare(strict_types=1);
 
 namespace App\Controller\Api;
 
+use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
-class AdminController extends AbstractController
+class GoogleController extends AbstractController
 {
-    #[Route('/admin/login', name: 'admin_login', methods: ['POST'])]
-    public function login(): JsonResponse
+    #[Route('/connect/google', name: 'connect_google')]
+    public function connect(ClientRegistry $clientRegistry)
     {
-        return new JsonResponse(['ok' => true]);
+        return $clientRegistry->getClient('google')
+            ->redirect(['email', 'profile']);
+    }
+
+    #[Route('/connect/google/check', name: 'connect_google_check')]
+    public function connectCheck()
+    {
+
     }
 
     #[Route('/admin/logout', methods: ['POST'])]
