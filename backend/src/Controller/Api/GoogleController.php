@@ -6,7 +6,10 @@ namespace App\Controller\Api;
 
 use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class GoogleController extends AbstractController
 {
@@ -21,5 +24,24 @@ class GoogleController extends AbstractController
     public function connectCheck()
     {
 
+    }
+
+    #[Route('/admin/logout', methods: ['POST'])]
+    public function logout(
+        RequestStack $requestStack,
+        TokenStorageInterface $tokenStorage
+    ): JsonResponse {
+
+        $session = $requestStack->getSession();
+
+        if ($session) {
+            $session->remove('_security_main');
+            $session->clear();
+            $session->invalidate();
+        }
+
+        $tokenStorage->setToken(null);
+
+        return new JsonResponse(['success' => true]);
     }
 }

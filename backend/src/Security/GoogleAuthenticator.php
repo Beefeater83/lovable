@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Security;
 
+use App\Entity\User;
 use App\Repository\UserRepository;
 use KnpU\OAuth2ClientBundle\Security\Authenticator\OAuth2Authenticator;
 use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
@@ -30,14 +31,14 @@ class GoogleAuthenticator extends OAuth2Authenticator
 
         return new SelfValidatingPassport(
             new UserBadge($accessToken->getToken(), function () use ($client, $accessToken) {
-               // /** @var GoogleUser $googleUser */
+                /** @var GoogleUser $googleUser */
                 $googleUser = $client->fetchUserFromToken($accessToken);
 
                 $email = $googleUser->getEmail();
                 $user = $this->userRepository->findOneBy(['email' => $email]);
 
                 if (!$user) {
-                    throw new AuthenticationException('User not found in DB');
+                    throw new AuthenticationException('User not found');
                 }
 
                 return $user;

@@ -204,35 +204,13 @@ function showError(message) {
 function clearError() {
     errorDiv.textContent = '';
 }
-/* authentication without google
-async function loginAdmin() {
-    clearError();
 
-    const res = await fetch(`${API_BASE}/api/admin/login`, {
-        method: 'POST',
-        credentials: 'include'
-    });
-
-    if (res.status === 403) {
-        showError('You are not admin or not found');
-        return;
-    }
-
-    if (!res.ok) {
-        showError('Login failed');
-        return;
-    }
-
-    showError('Logged in as admin');
-    fetchProducts();
-}
-*/
 function checkLoginResult() {
     const params = new URLSearchParams(window.location.search);
     const login = params.get('login');
 
     if (login === 'success') {
-        showError('Logged in as admin');
+        showError('Authenticated. Admin access will be checked per action.');
         fetchProducts();
     } else if (login === 'failed') {
         showError('Login failed');
