@@ -22,7 +22,8 @@ class GoogleAuthenticator extends OAuth2Authenticator
     public function __construct(
         private ClientRegistry $clientRegistry,
         private UserRepository $userRepository,
-        private JWTTokenManagerInterface $jwtManager
+        private JWTTokenManagerInterface $jwtManager,
+        private string $frontendUrl
     ) {}
 
     public function authenticate(Request $request): SelfValidatingPassport
@@ -55,7 +56,7 @@ class GoogleAuthenticator extends OAuth2Authenticator
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
         $jwt = $this->jwtManager->create($token->getUser());
-        $url = 'https://lovable.diakonov-it.com.ua/frontend/admin.html?login=success&token=' . $jwt;
+        $url = $this->frontendUrl . '?login=success#token=' . $jwt;
 
         return new RedirectResponse($url);
     }
@@ -63,7 +64,7 @@ class GoogleAuthenticator extends OAuth2Authenticator
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
     {
         return new RedirectResponse(
-            'https://lovable.diakonov-it.com.ua/frontend/admin.html?login=failed'
+            $this->frontendUrl . '?login=failed'
         );
     }
 }

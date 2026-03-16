@@ -5,6 +5,7 @@
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
     upload_dir: '%kernel.project_dir%/public/uploads/products'
+    frontend_url: '%env(FRONTEND_URL)%'
 
 services:
     # default configuration for services in *this* file
@@ -36,3 +37,7 @@ services:
     App\EventListener\ProductDeleteListener:
         tags:
             - { name: kernel.event_listener, event: 'products.delete.after_remove',  method: onAfterDelete }
+
+    App\Security\GoogleAuthenticator:
+        arguments:
+            $frontendUrl: '%frontend_url%'

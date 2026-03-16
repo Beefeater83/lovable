@@ -7,6 +7,20 @@ const container = document.getElementById('admin-content');
 let editingId = null;
 let addingCategory = null;
 
+let jwtToken = localStorage.getItem('jwt');
+
+function extractTokenFromUrl() {
+    const hash = window.location.hash;
+    if (hash.startsWith('#token=')) {
+        const token = hash.substring(7);
+        localStorage.setItem('jwt', token);
+        jwtToken = token;
+        history.replaceState({}, '', window.location.pathname + window.location.search);
+    }
+}
+
+extractTokenFromUrl();
+
 async function fetchProducts() {
     const res = await fetch(PRODUCTS_URL);
     const data = await res.json();
@@ -96,9 +110,12 @@ async function saveEdit(id) {
 
     const res = await fetch(`${PRODUCTS_URL}/${id}`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${jwtToken}`
+        },
         body: JSON.stringify({ name, price }),
-        credentials: 'include'
+        //credentials: 'include'
     });
 
     if (res.status === 403) {
@@ -115,7 +132,10 @@ async function deleteProduct(id) {
     clearError();
     const res = await fetch(`${PRODUCTS_URL}/${id}`, {
         method: 'DELETE',
-        credentials: 'include'
+        headers: {
+            'Authorization': `Bearer ${jwtToken}`
+        }
+        //credentials: 'include'
     });
     if (res.status === 403) {
         showError('You are not admin');
@@ -156,8 +176,11 @@ async function saveAdd(category) {
 
     const res = await fetch(PRODUCTS_URL, {
         method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${jwtToken}`
+        },
         body: formData,
-        credentials: 'include'
+       // credentials: 'include'
     });
 
     if (res.status === 403) {
@@ -227,6 +250,8 @@ function loginWithGoogle() {
     window.location.href = `${API_BASE}/api/connect/google`;
 }
 
+/*
+sessions security
 async function logoutAdmin() {
     const res = await fetch(`${API_BASE}/api/admin/logout`, {
         method: 'POST',
@@ -238,6 +263,13 @@ async function logoutAdmin() {
         return;
     }
 
+    showError('Logged out');
+}
+ */
+
+function logoutAdmin() {
+    localStorage.removeItem('jwt');
+    jwtToken = null;
     showError('Logged out');
 }
 
