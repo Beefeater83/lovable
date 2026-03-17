@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Security;
 
-use App\Entity\User;
 use App\Repository\UserRepository;
 use KnpU\OAuth2ClientBundle\Security\Authenticator\OAuth2Authenticator;
 use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
 use League\OAuth2\Client\Provider\GoogleUser;
+use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,7 +21,9 @@ class GoogleAuthenticator extends OAuth2Authenticator
 {
     public function __construct(
         private ClientRegistry $clientRegistry,
-        private UserRepository $userRepository
+        private UserRepository $userRepository,
+        private JWTTokenManagerInterface $jwtManager,
+        private string $frontendUrl
     ) {}
 
     public function authenticate(Request $request): SelfValidatingPassport
@@ -53,15 +55,16 @@ class GoogleAuthenticator extends OAuth2Authenticator
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
-        return new RedirectResponse(
-            'https://lovable.diakonov-it.com.ua/frontend/admin.html?login=success'
-        );
+        $jwt = $this->jwtManager->create($token->getUser());
+        $url = $this->frontendUrl . '?login=success#token=' . $jwt;
+
+        return new RedirectResponse($url);
     }
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
     {
         return new RedirectResponse(
-            'https://lovable.diakonov-it.com.ua/frontend/admin.html?login=failed'
+            $this->frontendUrl . '?login=failed'
         );
     }
 }

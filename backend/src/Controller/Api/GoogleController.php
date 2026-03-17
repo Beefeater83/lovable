@@ -25,7 +25,7 @@ class GoogleController extends AbstractController
     {
 
     }
-
+/*
     #[Route('/admin/logout', methods: ['POST'])]
     public function logout(
         RequestStack $requestStack,
@@ -44,4 +44,5 @@ class GoogleController extends AbstractController
 
         return new JsonResponse(['success' => true]);
     }
+*/
 }
