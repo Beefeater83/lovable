@@ -100,6 +100,13 @@ function cancelEdit() {
 
 async function saveEdit(id) {
     clearError();
+
+    if (!jwtToken) {
+        showError('Not authenticated. Please login.');
+        cancelEdit();
+        return;
+    }
+
     const nameInput = document.querySelector(`.name-input[data-id="${id}"]`);
     const priceInput = document.querySelector(`.price-input[data-id="${id}"]`);
 
@@ -118,6 +125,12 @@ async function saveEdit(id) {
         //credentials: 'include'
     });
 
+    if (res.status === 401) {
+        showError('Not authenticated. Please login.');
+        cancelEdit();
+        return;
+    }
+
     if (res.status === 403) {
         showError('You are not admin');
         cancelEdit();
@@ -130,13 +143,23 @@ async function saveEdit(id) {
 
 async function deleteProduct(id) {
     clearError();
+
+    if (!jwtToken) {
+        showError('Not authenticated. Please login.');
+        return;
+    }
+
     const res = await fetch(`${PRODUCTS_URL}/${id}`, {
         method: 'DELETE',
-        headers: {
-            'Authorization': `Bearer ${jwtToken}`
-        }
+        headers: { 'Authorization': `Bearer ${jwtToken}` }
         //credentials: 'include'
     });
+
+    if (res.status === 401) {
+        showError('Not authenticated. Please login.');
+        return;
+    }
+
     if (res.status === 403) {
         showError('You are not admin');
         return;
@@ -157,6 +180,13 @@ function cancelAdd() {
 
 async function saveAdd(category) {
     clearError();
+
+    if (!jwtToken) {
+        showError('Not authenticated. Please login.');
+        cancelAdd();
+        return;
+    }
+
     const addRow = document.querySelector(`.admin-category:has(.file-input)`);
     const fileInput = addRow.querySelector('.file-input');
     const nameInput = addRow.querySelector('.name-input');
@@ -176,12 +206,16 @@ async function saveAdd(category) {
 
     const res = await fetch(PRODUCTS_URL, {
         method: 'POST',
-        headers: {
-            'Authorization': `Bearer ${jwtToken}`
-        },
+        headers: { 'Authorization': `Bearer ${jwtToken}` },
         body: formData,
        // credentials: 'include'
     });
+
+    if (res.status === 401) {
+        showError('Not authenticated. Please login.');
+        cancelAdd();
+        return;
+    }
 
     if (res.status === 403) {
         showError('You are not admin');
@@ -195,7 +229,7 @@ async function saveAdd(category) {
 
 async function exportXlsx() {
     const response = await fetch(PRODUCTS_URL, {
-        credentials: 'include',
+       // credentials: 'include',
         headers: {
             'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         }
