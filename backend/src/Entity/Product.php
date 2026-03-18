@@ -14,6 +14,16 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Table(name: 'products')]
 class Product
 {
+    public const CATEGORY_PHONE      = 'phone';
+    public const CATEGORY_NOTEBOOK   = 'notebook';
+    public const CATEGORY_HEADPHONES = 'headphones';
+
+    public const ALLOWED_CATEGORIES = [
+        self::CATEGORY_PHONE,
+        self::CATEGORY_NOTEBOOK,
+        self::CATEGORY_HEADPHONES,
+    ];
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -34,6 +44,7 @@ class Product
     private string $imagePath;
 
     #[ORM\Column(length: 100)]
+    #[Assert\Choice(choices: self::ALLOWED_CATEGORIES, groups: ['create', 'patch'])]
     #[Groups(['create', 'patch'])]
     private string $category;
 

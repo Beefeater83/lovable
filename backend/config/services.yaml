@@ -34,10 +34,24 @@ services:
         arguments:
             $uploadDir: '%upload_dir%'
 
-    App\EventListener\ProductDeleteListener:
+
+    App\EventListener\ProductAfterDeleteListener:
         tags:
             - { name: kernel.event_listener, event: 'products.delete.after_remove',  method: onAfterDelete }
 
     App\Security\GoogleAuthenticator:
         arguments:
             $frontendUrl: '%frontend_url%'
+            $logger: '@monolog.logger.security'
+
+    App\Security\ProductVoter:
+        arguments:
+            $logger: '@monolog.logger.security'
+
+    App\EventListener\ProductBeforeDeleteListener:
+        tags:
+            - { name: kernel.event_listener, event: 'products.delete.before_remove',  method: onBeforeDelete }
+
+    App\EventListener\ProductBeforePatchListener:
+        tags:
+            - { name: kernel.event_listener, event: 'products.patch.before_persist',  method: onBeforePersist }

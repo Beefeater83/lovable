@@ -16,6 +16,7 @@ use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Http\Authenticator\Passport\SelfValidatingPassport;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
+use Psr\Log\LoggerInterface;
 
 class GoogleAuthenticator extends OAuth2Authenticator
 {
@@ -23,7 +24,8 @@ class GoogleAuthenticator extends OAuth2Authenticator
         private ClientRegistry $clientRegistry,
         private UserRepository $userRepository,
         private JWTTokenManagerInterface $jwtManager,
-        private string $frontendUrl
+        private string $frontendUrl,
+        private LoggerInterface $logger
     ) {}
 
     public function authenticate(Request $request): SelfValidatingPassport
@@ -55,6 +57,10 @@ class GoogleAuthenticator extends OAuth2Authenticator
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
+        $this->logger->info('User logged in via Google', [
+            'email' => $token->getUser()->getEmail()
+        ]);
+
         $jwt = $this->jwtManager->create($token->getUser());
         $url = $this->frontendUrl . '?login=success#token=' . $jwt;
 
@@ -63,6 +69,10 @@ class GoogleAuthenticator extends OAuth2Authenticator
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
     {
+        $this->logger->warning('Google login failed', [
+            'reason' => $exception->getMessage(),
+        ]);
+
         return new RedirectResponse(
             $this->frontendUrl . '?login=failed'
         );

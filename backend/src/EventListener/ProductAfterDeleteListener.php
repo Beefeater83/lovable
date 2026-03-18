@@ -8,7 +8,7 @@ use App\Entity\Product;
 use App\Services\ImageStorageService;
 use Beefeater\CrudEventBundle\Event\CrudAfterEntityDelete;
 
-class ProductDeleteListener
+class ProductAfterDeleteListener
 {
     private ImageStorageService $imageStorage;
 
