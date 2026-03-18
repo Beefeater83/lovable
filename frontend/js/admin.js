@@ -132,7 +132,7 @@ async function saveEdit(id) {
     }
 
     if (res.status === 403) {
-        showError('You are not admin');
+        showError('You do not have permission to perform this action');
         cancelEdit();
         return;
     }
@@ -161,7 +161,7 @@ async function deleteProduct(id) {
     }
 
     if (res.status === 403) {
-        showError('You are not admin');
+        showError('You do not have permission to perform this action');
         return;
     }
 
@@ -218,7 +218,7 @@ async function saveAdd(category) {
     }
 
     if (res.status === 403) {
-        showError('You are not admin');
+        showError('You do not have permission to perform this action');
         cancelAdd();
         return;
     }

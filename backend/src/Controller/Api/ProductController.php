@@ -54,13 +54,15 @@ class ProductController extends CrudController
             return new Response('Invalid image type', Response::HTTP_BAD_REQUEST);
         }
 
-        $newFilename = $this->imageStorageService->upload($imageFile);
-
         $product = (new Product())
             ->setName($name)
             ->setCategory($category)
-            ->setPrice((float)$price)
-            ->setImagePath($newFilename);
+            ->setPrice((float)$price);
+
+        $this->denyAccessUnlessGranted('PRODUCT_CREATE', $product);
+
+        $newFilename = $this->imageStorageService->upload($imageFile);
+        $product->setImagePath($newFilename);
 
         parent::validate($this->validator, $product, "create");
         parent::saveEntity($product);
