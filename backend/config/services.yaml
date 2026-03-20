@@ -30,6 +30,10 @@ services:
         tags:
             - { name: kernel.event_listener, event: kernel.exception }
 
+    App\EventListener\PayloadValidationExceptionListener:
+        tags:
+            - { name: kernel.event_listener, event: kernel.exception }
+
     App\Services\ImageStorageService:
         arguments:
             $uploadDir: '%upload_dir%'

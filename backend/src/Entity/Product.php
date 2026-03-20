@@ -30,21 +30,36 @@ class Product
     private ?int $id = null;
 
     #[ORM\Column(length: 255, nullable: false)]
-    #[Assert\NotBlank(groups: ['create', 'patch'])]
+    #[Assert\NotBlank(
+        message: 'Name should not be blank.',
+        groups: ['create', 'patch']
+    )]
     #[Groups(['create', 'patch'])]
     private string $name;
 
     #[ORM\Column(name: "price", type: Types::FLOAT, nullable: false)]
-    #[Assert\NotBlank(groups: ['create', 'patch'])]
+    #[Assert\NotBlank(
+        message: 'Price should not be blank.',
+        groups: ['create', 'patch']
+    )]
+    #[Assert\Positive(message: 'Price must be greater than 0.')]
     #[Groups(['create', 'patch'])]
     private float $price;
 
     #[ORM\Column(length: 255, nullable: false)]
+    #[Assert\NotBlank(
+        message: 'Image path should not be blank.',
+        groups: ['create', 'patch']
+    )]
     #[Groups(['create', 'patch'])]
     private string $imagePath;
 
     #[ORM\Column(length: 100)]
-    #[Assert\Choice(choices: self::ALLOWED_CATEGORIES, groups: ['create', 'patch'])]
+    #[Assert\Choice(
+        choices: self::ALLOWED_CATEGORIES,
+        message: 'Invalid category. Allowed: phone, notebook, headphones.',
+        groups: ['create', 'patch']
+    )]
     #[Groups(['create', 'patch'])]
     private string $category;
 
