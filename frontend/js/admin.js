@@ -98,6 +98,15 @@ function cancelEdit() {
     fetchProducts();
 }
 
+function handleValidationErrors(errors) {
+    if (!errors || errors.length === 0) {
+        showError('Validation error');
+        return;
+    }
+
+    showError(errors.join('\n'));
+}
+
 async function saveEdit(id) {
     clearError();
 
@@ -111,10 +120,10 @@ async function saveEdit(id) {
     const priceInput = document.querySelector(`.price-input[data-id="${id}"]`);
 
     const name = nameInput.value.trim();
-    const price = Number(priceInput.value);
+    const price = priceInput.value === '' ? 0 : Number(priceInput.value);
 
-    if (!name || !price) return;
-
+   // if (!name || !price) return;
+    formData.append('name', name);
     const res = await fetch(`${PRODUCTS_URL}/${id}`, {
         method: 'PATCH',
         headers: {
@@ -124,6 +133,12 @@ async function saveEdit(id) {
         body: JSON.stringify({ name, price }),
         //credentials: 'include'
     });
+
+    if (res.status === 400) {
+        const data = await res.json();
+        handleValidationErrors(data.error);
+        return;
+    }
 
     if (res.status === 401) {
         showError('Not authenticated. Please login.');
@@ -187,19 +202,24 @@ async function saveAdd(category) {
         return;
     }
 
-    const addRow = document.querySelector(`.admin-category:has(.file-input)`);
+    const addRow = document.querySelector('.file-input')?.closest('.admin-row')
     const fileInput = addRow.querySelector('.file-input');
     const nameInput = addRow.querySelector('.name-input');
     const priceInput = addRow.querySelector('.price-input');
 
     const name = nameInput.value.trim();
-    const price = Number(priceInput.value);
+    const sendName = name.length === 0 ? ' ' : name;
+    const price = priceInput.value === '' ? 0 : Number(priceInput.value);
     const file = fileInput.files[0];
 
-    if (!name || !price || !file) return;
+   // if (!name || !price || !file) return;
+    if (!file) {
+        showError('Image is required');
+        return;
+    }
 
     const formData = new FormData();
-    formData.append('name', name);
+    formData.append('name', sendName);
     formData.append('price', price);
     formData.append('category', category);
     formData.append('image', file);
@@ -210,6 +230,12 @@ async function saveAdd(category) {
         body: formData,
        // credentials: 'include'
     });
+
+    if (res.status === 400) {
+        const data = await res.json();
+        handleValidationErrors(data.error);
+        return;
+    }
 
     if (res.status === 401) {
         showError('Not authenticated. Please login.');
@@ -255,7 +281,7 @@ async function exportXlsx() {
 const errorDiv = document.getElementById('admin-error');
 
 function showError(message) {
-    errorDiv.textContent = message;
+    errorDiv.innerHTML = message.replace(/\n/g, '<br>');
 }
 
 function clearError() {
