@@ -34,6 +34,11 @@ class Product
         message: 'Name should not be blank.',
         groups: ['create', 'patch']
     )]
+    #[Assert\Length(
+        min: 2,
+        minMessage: 'Name should have at least 2 characters.',
+        groups: ['create', 'patch']
+    )]
     #[Groups(['create', 'patch'])]
     private string $name;
 
@@ -42,7 +47,10 @@ class Product
         message: 'Price should not be blank.',
         groups: ['create', 'patch']
     )]
-    #[Assert\Positive(message: 'Price must be greater than 0.')]
+    #[Assert\Positive(
+        message: 'Price must be greater than 0.',
+        groups: ['create', 'patch']
+    )]
     #[Groups(['create', 'patch'])]
     private float $price;
 

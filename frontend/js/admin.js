@@ -120,10 +120,10 @@ async function saveEdit(id) {
     const priceInput = document.querySelector(`.price-input[data-id="${id}"]`);
 
     const name = nameInput.value.trim();
-    const price = priceInput.value === '' ? null : Number(priceInput.value);
+    const price = priceInput.value === '' ? 0 : Number(priceInput.value);
 
    // if (!name || !price) return;
-
+    formData.append('name', name);
     const res = await fetch(`${PRODUCTS_URL}/${id}`, {
         method: 'PATCH',
         headers: {
@@ -208,13 +208,18 @@ async function saveAdd(category) {
     const priceInput = addRow.querySelector('.price-input');
 
     const name = nameInput.value.trim();
-    const price = priceInput.value === '' ? null : Number(priceInput.value);
+    const sendName = name.length === 0 ? ' ' : name;
+    const price = priceInput.value === '' ? 0 : Number(priceInput.value);
     const file = fileInput.files[0];
 
    // if (!name || !price || !file) return;
+    if (!file) {
+        showError('Image is required');
+        return;
+    }
 
     const formData = new FormData();
-    formData.append('name', name);
+    formData.append('name', sendName);
     formData.append('price', price);
     formData.append('category', category);
     formData.append('image', file);
@@ -229,7 +234,6 @@ async function saveAdd(category) {
     if (res.status === 400) {
         const data = await res.json();
         handleValidationErrors(data.error);
-        cancelAdd();
         return;
     }
 
