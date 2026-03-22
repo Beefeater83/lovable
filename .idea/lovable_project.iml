@@ -145,6 +145,7 @@
       <excludeFolder url="file://$MODULE_DIR$/backend/vendor/psr/http-factory" />
       <excludeFolder url="file://$MODULE_DIR$/backend/vendor/psr/http-message" />
       <excludeFolder url="file://$MODULE_DIR$/backend/vendor/ralouphie/getallheaders" />
+      <excludeFolder url="file://$MODULE_DIR$/backend/vendor/squizlabs/php_codesniffer" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
