@@ -31,7 +31,7 @@ class ResourceNotFoundExceptionListenerTest extends TestCase
         $data = json_decode($response->getContent(), true);
 
         $this->assertEquals([
-            'error' => 'Product with id 42 not found'
+            'error' => Product::class . ' with id 42 not found'
         ], $data);
     }
 

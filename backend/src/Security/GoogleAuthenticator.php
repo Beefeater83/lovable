@@ -26,7 +26,8 @@ class GoogleAuthenticator extends OAuth2Authenticator
         private JWTTokenManagerInterface $jwtManager,
         private string $frontendUrl,
         private LoggerInterface $logger
-    ) {}
+    ) {
+    }
 
     public function authenticate(Request $request): SelfValidatingPassport
     {
