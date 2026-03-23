@@ -2,9 +2,9 @@ name: Build Status
 
 on:
     push:
-        branches: [main]
+        branches: ['**']
     pull_request:
-        types: [ opened, synchronize ]
+        types: ['**']
 
 env:
     DATABASE_URL: localhost
