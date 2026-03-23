@@ -122,7 +122,6 @@ async function saveEdit(id) {
     const name = nameInput.value.trim();
     const price = priceInput.value === '' ? 0 : Number(priceInput.value);
 
-   // if (!name || !price) return;
     formData.append('name', name);
     const res = await fetch(`${PRODUCTS_URL}/${id}`, {
         method: 'PATCH',
@@ -212,7 +211,6 @@ async function saveAdd(category) {
     const price = priceInput.value === '' ? 0 : Number(priceInput.value);
     const file = fileInput.files[0];
 
-   // if (!name || !price || !file) return;
     if (!file) {
         showError('Image is required');
         return;

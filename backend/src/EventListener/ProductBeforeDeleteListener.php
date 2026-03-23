@@ -11,7 +11,9 @@ use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 class ProductBeforeDeleteListener
 {
-    public function __construct(private AuthorizationCheckerInterface $authChecker) {}
+    public function __construct(private AuthorizationCheckerInterface $authChecker)
+    {
+    }
     public function onBeforeDelete(CrudBeforeEntityDelete $event): void
     {
         $product = $event->getEntity();

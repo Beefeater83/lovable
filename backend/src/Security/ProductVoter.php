@@ -11,7 +11,9 @@ use Psr\Log\LoggerInterface;
 
 class ProductVoter extends Voter
 {
-    public function __construct(private LoggerInterface $logger) {}
+    public function __construct(private LoggerInterface $logger)
+    {
+    }
 
     public const CREATE = 'PRODUCT_CREATE';
     public const PATCH  = 'PRODUCT_PATCH';
