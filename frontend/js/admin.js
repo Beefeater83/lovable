@@ -291,7 +291,7 @@ function checkLoginResult() {
     const login = params.get('login');
 
     if (login === 'success') {
-        showError('Authenticated. Admin access will be checked per action.');
+        showError('Authenticated. Your access will be checked per action.');
         fetchProducts();
     } else if (login === 'failed') {
         showError('Login failed');
