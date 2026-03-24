@@ -88,7 +88,7 @@
             "importmap:install": "symfony-cmd"
         },
         "tests": "phpunit",
-        "cs": "phpcs --standard=PSR12 src Tests",
+        "cs": "phpcs --standard=PSR12 src tests",
         "post-install-cmd": [
             "@auto-scripts"
         ],
