@@ -7,7 +7,7 @@ on:
         types: [ opened, synchronize ]
 
 env:
-    DATABASE_URL: localhost
+    DATABASE_URL: sqlite:///%kernel.project_dir%/var/test.db
 
 jobs:
   build-test:
@@ -16,6 +16,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      -
+        name: Create .env
+        run: |
+          cd backend
+          echo "APP_ENV=test" > .env
+          echo "APP_SECRET=ci_secret" >> .env
+          echo "DATABASE_URL=sqlite:///%kernel.project_dir%/var/test.db" >> .env
       -
         name: Cache Composer dependencies between workflows
         uses: actions/cache@v3
