@@ -14,6 +14,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Allow dubious git ownership
+        run: git config --global --add safe.directory /app/backend
+
       - uses: actions/checkout@v4
 
       -
@@ -23,6 +26,7 @@ jobs:
           echo "APP_ENV=test" > .env
           echo "APP_SECRET=ci_secret" >> .env
           echo "DATABASE_URL=sqlite:///%kernel.project_dir%/var/test.db" >> .env
+          echo "DEFAULT_URI=http://localhost" >> .env
       -
         name: Cache Composer dependencies between workflows
         uses: actions/cache@v3
