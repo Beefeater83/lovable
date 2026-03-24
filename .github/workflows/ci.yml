@@ -1,0 +1,50 @@
+name: Build Status
+
+on:
+    push:
+        branches: [main]
+    pull_request:
+        types: [ opened, synchronize ]
+
+env:
+    DATABASE_URL: sqlite:///%kernel.project_dir%/var/test.db
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Allow dubious git ownership
+        run: git config --global --add safe.directory /app/backend
+
+      - uses: actions/checkout@v4
+
+      -
+        name: Create .env
+        run: |
+          cd backend
+          echo "APP_ENV=test" > .env
+          echo "APP_SECRET=ci_secret" >> .env
+          echo "DATABASE_URL=sqlite:///%kernel.project_dir%/var/test.db" >> .env
+          echo "DEFAULT_URI=http://localhost" >> .env
+      -
+        name: Cache Composer dependencies between workflows
+        uses: actions/cache@v3
+        with:
+          path: ~/.composer/cache
+          key: ${{ runner.os }}-${{ hashFiles('./backend/composer.lock') }}
+      -
+        name: Install dependencies
+        uses: php-actions/composer@v6
+        with:
+          working_dir: ./backend
+          #php_extensions to ignore
+          args: --ignore-platform-req=ext-gd  --ignore-platform-req=ext-zip
+      -
+        name: run tests
+        working-directory: ./backend
+        run: composer tests
+      -
+        name: checkstyle
+        working-directory: ./backend
+        run: composer cs
