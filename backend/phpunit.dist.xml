@@ -16,6 +16,8 @@
         <server name="APP_ENV" value="test" force="true" />
         <server name="SHELL_VERBOSITY" value="-1" />
 
+        <server name="KERNEL_CLASS" value="App\Kernel"/>
+
         <!-- ###+ lexik/jwt-authentication-bundle ### -->
         <env name="JWT_SECRET_KEY" value="%kernel.project_dir%/config/jwt/private.pem"/>
         <env name="JWT_PUBLIC_KEY" value="%kernel.project_dir%/config/jwt/public.pem"/>
@@ -26,6 +28,10 @@
     <testsuites>
         <testsuite name="unit-tests">
             <directory>tests/Unit</directory>
+        </testsuite>
+
+        <testsuite name="functional-tests">
+            <directory>tests/Functional</directory>
         </testsuite>
     </testsuites>
 
