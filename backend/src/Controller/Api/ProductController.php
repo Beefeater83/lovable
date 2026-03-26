@@ -67,6 +67,6 @@ class ProductController extends CrudController
         parent::validate($this->validator, $product, "create");
         parent::saveEntity($product);
 
-        return new JsonResponse(['message' => 'Product created'], Response::HTTP_CREATED);
+        return new JsonResponse(['id' => $product->getId()], Response::HTTP_CREATED);
     }
 }
