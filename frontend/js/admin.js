@@ -122,7 +122,6 @@ async function saveEdit(id) {
     const name = nameInput.value.trim();
     const price = priceInput.value === '' ? 0 : Number(priceInput.value);
 
-    formData.append('name', name);
     const res = await fetch(`${PRODUCTS_URL}/${id}`, {
         method: 'PATCH',
         headers: {
