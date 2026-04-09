@@ -4,11 +4,15 @@ declare(strict_types=1);
 
 namespace App\Security;
 
+use App\Entity\RefreshToken;
+use App\Entity\User;
 use App\Repository\UserRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use KnpU\OAuth2ClientBundle\Security\Authenticator\OAuth2Authenticator;
 use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
 use League\OAuth2\Client\Provider\GoogleUser;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
+use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -25,7 +29,8 @@ class GoogleAuthenticator extends OAuth2Authenticator
         private UserRepository $userRepository,
         private JWTTokenManagerInterface $jwtManager,
         private string $frontendUrl,
-        private LoggerInterface $logger
+        private LoggerInterface $logger,
+        private EntityManagerInterface $entityManager
     ) {
     }
 
@@ -58,14 +63,38 @@ class GoogleAuthenticator extends OAuth2Authenticator
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
+        /** @var User $user */
+        $user = $token->getUser();
         $this->logger->info('User logged in via Google', [
-            'email' => $token->getUser()->getEmail()
+            'email' => $user->getEmail()
         ]);
 
-        $jwt = $this->jwtManager->create($token->getUser());
-        $url = $this->frontendUrl . '?login=success#token=' . $jwt;
+        $accessToken = $this->jwtManager->create($user);
+        $refreshTokenValue = bin2hex(random_bytes(32));
+        $refresh = new RefreshToken();
+        $refresh->setToken($refreshTokenValue);
+        $refresh->setUser($user);
+        $refresh->setExpiresAt(new \DateTimeImmutable('+15 minutes'));
+        $this->entityManager->persist($refresh);
+        $this->entityManager->flush();
 
-        return new RedirectResponse($url);
+        $response = new RedirectResponse($this->frontendUrl . '?login=success');
+
+        $response->headers->setCookie(
+            Cookie::create('access_token', $accessToken, new \DateTime('+5 minutes'))
+                ->withHttpOnly(true)
+                ->withSecure(true)
+                ->withPath('/')
+        );
+
+        $response->headers->setCookie(
+            Cookie::create('refresh_token', $refreshTokenValue, new \DateTime('+15 minutes'))
+                ->withHttpOnly(true)
+                ->withSecure(true)
+                ->withPath('/api/refresh')
+        );
+
+        return $response;
     }
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response

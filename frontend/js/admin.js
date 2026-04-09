@@ -6,20 +6,39 @@ const container = document.getElementById('admin-content');
 
 let editingId = null;
 let addingCategory = null;
+let jwtToken = null;
 
-let jwtToken = localStorage.getItem('jwt');
-
-function extractTokenFromUrl() {
-    const hash = window.location.hash;
-    if (hash.startsWith('#token=')) {
-        const token = hash.substring(7);
-        localStorage.setItem('jwt', token);
-        jwtToken = token;
-        history.replaceState({}, '', window.location.pathname + window.location.search);
-    }
+function logoutAdmin() {
+    fetch(`${API_BASE}/api/logout`, {
+        method: 'POST',
+        credentials: 'include',
+    })
+        .then(() => {
+            showError('Logged out. You can log in again.');
+        })
+        .catch(() => {
+            showError('Logout failed');
+        });
 }
 
-extractTokenFromUrl();
+async function refreshToken() {
+    try {
+        const res = await fetch(`${API_BASE}/api/refresh`, {
+            method: 'POST',
+            credentials: 'include'
+        });
+
+        if (!res.ok) {
+            logoutAdmin();
+            return false;
+        }
+
+        return true;
+    } catch (e) {
+        logoutAdmin();
+        return false;
+    }
+}
 
 async function fetchProducts() {
     const res = await fetch(PRODUCTS_URL);
@@ -110,26 +129,19 @@ function handleValidationErrors(errors) {
 async function saveEdit(id) {
     clearError();
 
-    if (!jwtToken) {
-        showError('Not authenticated. Please login.');
-        cancelEdit();
-        return;
-    }
-
     const nameInput = document.querySelector(`.name-input[data-id="${id}"]`);
     const priceInput = document.querySelector(`.price-input[data-id="${id}"]`);
 
     const name = nameInput.value.trim();
     const price = priceInput.value === '' ? 0 : Number(priceInput.value);
 
-    const res = await fetch(`${PRODUCTS_URL}/${id}`, {
+    let res = await fetch(`${PRODUCTS_URL}/${id}`, {
         method: 'PATCH',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${jwtToken}`
         },
         body: JSON.stringify({ name, price }),
-        //credentials: 'include'
+        credentials: 'include'
     });
 
     if (res.status === 400) {
@@ -139,9 +151,19 @@ async function saveEdit(id) {
     }
 
     if (res.status === 401) {
-        showError('Not authenticated. Please login.');
-        cancelEdit();
-        return;
+        const refreshed = await refreshToken();
+        if (refreshed) {
+            res = await fetch(`${PRODUCTS_URL}/${id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, price }),
+                credentials: 'include'
+            });
+        } else {
+            showError('Not authenticated. Please login.');
+            cancelEdit();
+            return;
+        }
     }
 
     if (res.status === 403) {
@@ -157,20 +179,22 @@ async function saveEdit(id) {
 async function deleteProduct(id) {
     clearError();
 
-    if (!jwtToken) {
-        showError('Not authenticated. Please login.');
-        return;
-    }
-
-    const res = await fetch(`${PRODUCTS_URL}/${id}`, {
+    let res = await fetch(`${PRODUCTS_URL}/${id}`, {
         method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${jwtToken}` }
-        //credentials: 'include'
+        credentials: 'include'
     });
 
     if (res.status === 401) {
-        showError('Not authenticated. Please login.');
-        return;
+        const refreshed = await refreshToken();
+        if (refreshed) {
+            res = await fetch(`${PRODUCTS_URL}/${id}`, {
+                method: 'DELETE',
+                credentials: 'include'
+            });
+        } else {
+            showError('Not authenticated. Please login.');
+            return;
+        }
     }
 
     if (res.status === 403) {
@@ -223,9 +247,8 @@ async function saveAdd(category) {
 
     const res = await fetch(PRODUCTS_URL, {
         method: 'POST',
-        headers: { 'Authorization': `Bearer ${jwtToken}` },
         body: formData,
-       // credentials: 'include'
+        credentials: 'include'
     });
 
     if (res.status === 400) {
@@ -252,7 +275,7 @@ async function saveAdd(category) {
 
 async function exportXlsx() {
     const response = await fetch(PRODUCTS_URL, {
-       // credentials: 'include',
+        //credentials: 'include',
         headers: {
             'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         }
@@ -323,11 +346,5 @@ async function logoutAdmin() {
     showError('Logged out');
 }
  */
-
-function logoutAdmin() {
-    localStorage.removeItem('jwt');
-    jwtToken = null;
-    showError('Logged out');
-}
 
 fetchProducts();
