@@ -14,7 +14,7 @@ function logoutAdmin() {
         credentials: 'include',
     })
         .then(() => {
-            showError('Logged out. You can log in again.');
+            showError('Logged out.');
         })
         .catch(() => {
             showError('Logout failed');
