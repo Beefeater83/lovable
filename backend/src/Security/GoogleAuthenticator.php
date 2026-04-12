@@ -74,7 +74,7 @@ class GoogleAuthenticator extends OAuth2Authenticator
         $refresh = new RefreshToken();
         $refresh->setToken($refreshTokenValue);
         $refresh->setUser($user);
-        $refresh->setExpiresAt(new \DateTimeImmutable('+15 minutes'));
+        $refresh->setExpiresAt(new \DateTimeImmutable('+1 hours'));
         $this->entityManager->persist($refresh);
         $this->entityManager->flush();
 
@@ -88,10 +88,10 @@ class GoogleAuthenticator extends OAuth2Authenticator
         );
 
         $response->headers->setCookie(
-            Cookie::create('refresh_token', $refreshTokenValue, new \DateTime('+15 minutes'))
+            Cookie::create('refresh_token', $refreshTokenValue, new \DateTime('+1 hours'))
                 ->withHttpOnly(true)
                 ->withSecure(true)
-                ->withPath('/api/refresh')
+                ->withPath('/')
         );
 
         return $response;

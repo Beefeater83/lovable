@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e4239265da811cd4b8b2c99f1970e006",
+    "content-hash": "64aba998b67352557457682eb18a2227",
     "packages": [
         {
             "name": "beefeater/crud-event-bundle",
-            "version": "2.2.8",
+            "version": "2.2.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Beefeater83/beefeater-crud-event-bundle.git",
-                "reference": "e3ba6467d5cd58c4341b8b4facc62cec4765c0ce"
+                "reference": "973a8d1143c9d2d60b28d15520e5b75413415391"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Beefeater83/beefeater-crud-event-bundle/zipball/e3ba6467d5cd58c4341b8b4facc62cec4765c0ce",
-                "reference": "e3ba6467d5cd58c4341b8b4facc62cec4765c0ce",
+                "url": "https://api.github.com/repos/Beefeater83/beefeater-crud-event-bundle/zipball/973a8d1143c9d2d60b28d15520e5b75413415391",
+                "reference": "973a8d1143c9d2d60b28d15520e5b75413415391",
                 "shasum": ""
             },
             "require": {
@@ -61,9 +61,9 @@
             "description": "Event-based CRUDL bundle with configurable filtering, pagination, and sorting for Symfony applications",
             "support": {
                 "issues": "https://github.com/Beefeater83/beefeater-crud-event-bundle/issues",
-                "source": "https://github.com/Beefeater83/beefeater-crud-event-bundle/tree/2.2.8"
+                "source": "https://github.com/Beefeater83/beefeater-crud-event-bundle/tree/2.2.9"
             },
-            "time": "2026-02-21T08:46:42+00:00"
+            "time": "2026-04-12T11:03:02+00:00"
         },
         {
             "name": "composer/pcre",
@@ -11647,7 +11647,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {},
+    "stability-flags": [],
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
@@ -11655,6 +11655,6 @@
         "ext-ctype": "*",
         "ext-iconv": "*"
     },
-    "platform-dev": {},
+    "platform-dev": [],
     "plugin-api-version": "2.6.0"
 }

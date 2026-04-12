@@ -139,8 +139,7 @@ class ProductControllerTest extends WebTestCase
         $id = $productData['id'];
 
         $this->client->request('DELETE', '/api/products/' . $id);
-        $this->assertResponseStatusCodeSame(403);
-        //bundle returns 403(checkSecurity). Bundle should check if(!user)->401
+        $this->assertResponseStatusCodeSame(401);
     }
 
     public function testPatchProductAsAdmin(): void
@@ -197,7 +196,6 @@ class ProductControllerTest extends WebTestCase
             json_encode(['name' => 'Updated Name'])
         );
 
-        $this->assertResponseStatusCodeSame(403);
-        //bundle returns 403(checkSecurity). Bundle should check if(!user)->401
+        $this->assertResponseStatusCodeSame(401);
     }
 }

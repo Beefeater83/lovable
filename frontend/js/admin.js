@@ -6,7 +6,6 @@ const container = document.getElementById('admin-content');
 
 let editingId = null;
 let addingCategory = null;
-let jwtToken = null;
 
 function logoutAdmin() {
     fetch(`${API_BASE}/api/logout`, {
@@ -29,13 +28,11 @@ async function refreshToken() {
         });
 
         if (!res.ok) {
-            logoutAdmin();
             return false;
         }
 
         return true;
     } catch (e) {
-        logoutAdmin();
         return false;
     }
 }
@@ -217,12 +214,6 @@ function cancelAdd() {
 
 async function saveAdd(category) {
     clearError();
-
-    if (!jwtToken) {
-        showError('Not authenticated. Please login.');
-        cancelAdd();
-        return;
-    }
 
     const addRow = document.querySelector('.file-input')?.closest('.admin-row')
     const fileInput = addRow.querySelector('.file-input');

@@ -13,13 +13,20 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\Routing\Annotation\Route;
 
-class RefreshController extends AbstractController
+class AuthServiceController extends CrudController
 {
+    private RefreshTokenRepository $refreshTokenRepository;
+    private JWTTokenManagerInterface $jwtManager;
+
     public function __construct(
-        private EntityManagerInterface $entityManager,
-        private RefreshTokenRepository $refreshTokenRepository,
-        private JWTTokenManagerInterface $jwtManager
-    ) {}
+        EntityManagerInterface $entityManager,
+        RefreshTokenRepository $refreshTokenRepository,
+        JWTTokenManagerInterface $jwtManager
+    ) {
+        parent::__construct($refreshTokenRepository, $entityManager);
+        $this->refreshTokenRepository = $refreshTokenRepository;
+        $this->jwtManager = $jwtManager;
+    }
 
     #[Route('/refresh', name: 'api_refresh', methods: ['POST'])]
     public function refresh(Request $request): Response
@@ -29,15 +36,16 @@ class RefreshController extends AbstractController
             return $this->json(['error' => 'Refresh token missing'], 401);
         }
 
-        $refreshToken = $this->refreshTokenRepository->findOneByToken($refreshTokenValue);
+        $refreshToken = $this->refreshTokenRepository->findOneBy([
+            'token' => $refreshTokenValue
+        ]);
 
         if (!$refreshToken) {
             return $this->json(['error' => 'Refresh token invalid'], 401);
         }
 
         if ($refreshToken->getExpiresAt() < new \DateTimeImmutable()) {
-            $this->entityManager->remove($refreshToken);
-            $this->entityManager->flush();
+            parent::remove($refreshToken);
 
             return $this->json(['error' => 'Refresh token expired'], 401);
         }
@@ -62,16 +70,17 @@ class RefreshController extends AbstractController
         $refreshTokenValue = $request->cookies->get('refresh_token');
 
         if ($refreshTokenValue) {
-            $refreshToken = $this->refreshTokenRepository->findOneByToken($refreshTokenValue);
+            $refreshToken = $this->refreshTokenRepository->findOneBy([
+                'token' => $refreshTokenValue
+            ]);
             if ($refreshToken) {
-                $this->entityManager->remove($refreshToken);
-                $this->entityManager->flush();
+                parent::remove($refreshToken);
             }
         }
 
         $response = $this->json(['success' => true]);
         $response->headers->clearCookie('access_token', '/');
-        $response->headers->clearCookie('refresh_token', '/api/refresh');
+        $response->headers->clearCookie('refresh_token', '/');
 
         return $response;
     }
