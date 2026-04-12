@@ -7,7 +7,7 @@
         "php": ">=8.2",
         "ext-ctype": "*",
         "ext-iconv": "*",
-        "beefeater/crud-event-bundle": ">=2.2.8",
+        "beefeater/crud-event-bundle": ">=2.2.9",
         "doctrine/doctrine-bundle": "2.15",
         "doctrine/doctrine-migrations-bundle": "^3.7",
         "doctrine/orm": "^3.6.2",
