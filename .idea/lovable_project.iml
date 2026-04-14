@@ -146,6 +146,13 @@
       <excludeFolder url="file://$MODULE_DIR$/backend/vendor/psr/http-message" />
       <excludeFolder url="file://$MODULE_DIR$/backend/vendor/ralouphie/getallheaders" />
       <excludeFolder url="file://$MODULE_DIR$/backend/vendor/squizlabs/php_codesniffer" />
+      <excludeFolder url="file://$MODULE_DIR$/backend/vendor/lcobucci/jwt" />
+      <excludeFolder url="file://$MODULE_DIR$/backend/vendor/lexik/jwt-authentication-bundle" />
+      <excludeFolder url="file://$MODULE_DIR$/backend/vendor/symfony/password-hasher" />
+      <excludeFolder url="file://$MODULE_DIR$/backend/vendor/symfony/security-bundle" />
+      <excludeFolder url="file://$MODULE_DIR$/backend/vendor/symfony/security-core" />
+      <excludeFolder url="file://$MODULE_DIR$/backend/vendor/symfony/security-csrf" />
+      <excludeFolder url="file://$MODULE_DIR$/backend/vendor/symfony/security-http" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
