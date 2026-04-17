@@ -7,6 +7,7 @@ namespace App\Entity;
 use App\Repository\ProductRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -14,6 +15,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Table(name: 'products')]
 class Product
 {
+    use TimestampableEntity;
+
     public const CATEGORY_PHONE      = 'phone';
     public const CATEGORY_NOTEBOOK   = 'notebook';
     public const CATEGORY_HEADPHONES = 'headphones';
@@ -70,6 +73,22 @@ class Product
     )]
     #[Groups(['create', 'patch'])]
     private string $category;
+
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\JoinColumn(name: "user_id",referencedColumnName: "id", nullable: true)]
+    private ?User $user = null;
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): static
+    {
+        $this->user = $user;
+
+        return $this;
+    }
 
     public function getId(): ?int
     {

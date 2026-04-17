@@ -153,6 +153,8 @@
       <excludeFolder url="file://$MODULE_DIR$/backend/vendor/symfony/security-core" />
       <excludeFolder url="file://$MODULE_DIR$/backend/vendor/symfony/security-csrf" />
       <excludeFolder url="file://$MODULE_DIR$/backend/vendor/symfony/security-http" />
+      <excludeFolder url="file://$MODULE_DIR$/backend/vendor/gedmo/doctrine-extensions" />
+      <excludeFolder url="file://$MODULE_DIR$/backend/vendor/stof/doctrine-extensions-bundle" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
