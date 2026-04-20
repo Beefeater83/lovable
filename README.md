@@ -8,9 +8,12 @@
 - Refresh token lifetime: **1 hour**
 - Access token is automatically refreshed via `/api/refresh` when expired.
 - If refresh token is expired or missing, the user must log in again.
-- Admin actions (`POST`, `PATCH`, `DELETE`) require `ROLE_ADMIN` or `ROLE_TRUSTED_USER`.
-- ROLE_TRUSTED_USER: can perform admin actions only on `notebook` products. Attempts on other categories return **403**
+- 
+## Roles and permissions
+- `ROLE_ADMIN` or `ROLE_TRUSTED_USER` can perform admin actions (`POST`, `PATCH`, `DELETE`).
+- ROLE_TRUSTED_USER: can perform admin actions only in the `notebook` category. Attempts on other categories return **403**
+- ROLE_TRUSTED_USER can **PATCH / DELETE only their own products**. Attempts to modify products owned by other users return **403**
 - If you’re logged in but don’t have the proper role, the API returns **403**.
-- If you are not authenticated, the API returns **401**.
+- If you are not authenticated, the API returns **401**
 - Export products to XLSX (public access)
 
