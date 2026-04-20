@@ -91,6 +91,7 @@
         },
         "tests": "phpunit --testsuite=unit-tests",
         "cs": "phpcs --standard=PSR12 src tests",
+        "cs-edit": "phpcbf --standard=PSR12 src/ tests/",
         "post-install-cmd": [
             "@auto-scripts"
         ],

@@ -69,12 +69,12 @@ class ProductControllerTest extends WebTestCase
         ];
     }
 
-    private function requestCreateProduct(array $headers = []): array
+    private function requestCreateProduct(array $headers = [], string $category = Product::CATEGORY_PHONE): array
     {
         $this->client->request('POST', '/api/products', [
             'name' => 'Test product',
             'price' => 100,
-            'category' => Product::CATEGORY_PHONE,
+            'category' => $category,
         ], [
             'image' => $this->file
         ], $headers);
@@ -197,5 +197,36 @@ class ProductControllerTest extends WebTestCase
         );
 
         $this->assertResponseStatusCodeSame(401);
+    }
+
+    public function testPatchProductDeniedForNonOwnerTrustedUser(): void
+    {
+        $trustedUser = $this->createUser('trusted_created@gmail.com', ['ROLE_TRUSTED_USER']);
+        $productData = $this->requestCreateProduct($this->authHeader($trustedUser), Product::CATEGORY_NOTEBOOK);
+        $id = $productData['id'];
+
+        $otherTrustedUser = $this->createUser('trusted_patched@gmail.com', ['ROLE_TRUSTED_USER']);
+        $this->client->request(
+            'PATCH',
+            '/api/products/' . $id,
+            [],
+            [],
+            array_merge($this->authHeader($otherTrustedUser), ['CONTENT_TYPE' => 'application/json']),
+            json_encode(['name' => 'Updated Name'])
+        );
+
+        $this->assertResponseStatusCodeSame(403);
+    }
+
+    public function testDeleteProductDeniedForNonOwnerTrustedUser(): void
+    {
+        $trustedUser = $this->createUser('trusted_created@gmail.com', ['ROLE_TRUSTED_USER']);
+        $productData = $this->requestCreateProduct($this->authHeader($trustedUser), Product::CATEGORY_NOTEBOOK);
+        $id = $productData['id'];
+
+        $otherTrustedUser = $this->createUser('trusted_other@gmail.com', ['ROLE_TRUSTED_USER']);
+        $this->client->request('DELETE', '/api/products/' . $id, [], [], $this->authHeader($otherTrustedUser));
+
+        $this->assertResponseStatusCodeSame(403);
     }
 }

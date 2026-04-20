@@ -75,7 +75,7 @@ class Product
     private string $category;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
-    #[ORM\JoinColumn(name: "user_id",referencedColumnName: "id", nullable: true)]
+    #[ORM\JoinColumn(name: "user_id", referencedColumnName: "id", nullable: true)]
     private ?User $user = null;
 
     public function getUser(): ?User
