@@ -32,24 +32,42 @@ class ProductVoter extends Voter
             return false;
         }
 
-        /** @var Product $product */
-        $product = $subject;
+        $isAdmin = in_array('ROLE_ADMIN', $user->getRoles(), true);
+        $isTrustedUser = in_array('ROLE_TRUSTED_USER', $user->getRoles(), true);
 
-        if (in_array('ROLE_TRUSTED_USER', $user->getRoles(), true)) {
-            $allowed = $product->getCategory() === Product::CATEGORY_NOTEBOOK;
-            $this->logger->info('[ProductVoter] ' . ($allowed ? 'access granted' : 'access denied'), [
-                'user' => $user->getEmail(),
-            ]);
-
-            return $allowed;
-        }
-
-        if (in_array('ROLE_ADMIN', $user->getRoles(), true)) {
+        if ($isAdmin) {
             $this->logger->info('[ProductVoter] access granted', [
                 'user' => $user->getEmail(),
             ]);
 
             return true;
+        }
+
+        /** @var Product $product */
+        $product = $subject;
+
+
+        if ($isTrustedUser) {
+            if ($product->getCategory() !== Product::CATEGORY_NOTEBOOK) {
+                $this->logger->info('[ProductVoter] access denied', [
+                    'user' => $user->getEmail(),
+                ]);
+
+                return false;
+            }
+
+            $allowed = match ($attribute) {
+                self::CREATE => true,
+                self::PATCH, self::DELETE =>
+                    $product->getUser()?->getId() === $user->getId(),
+                default => false
+            };
+            $this->logger->info(
+                '[ProductVoter] ' . ($allowed ? 'access granted' : 'access denied'),
+                [ 'user' => $user->getEmail() ]
+            );
+
+            return $allowed;
         }
 
         $this->logger->warning('[ProductVoter] access denied', [

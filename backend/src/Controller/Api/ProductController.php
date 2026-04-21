@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace App\Controller\Api;
 
 use App\Entity\Product;
+use App\Entity\User;
 use App\Repository\ProductRepository;
 use App\Services\ImageStorageService;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -21,17 +23,20 @@ class ProductController extends CrudController
     private ValidatorInterface $validator;
 
     private ImageStorageService $imageStorageService;
+    private Security $security;
 
     public function __construct(
         ProductRepository $productRepository,
         EntityManagerInterface $entityManager,
         ValidatorInterface $validator,
-        ImageStorageService $imageStorageService
+        ImageStorageService $imageStorageService,
+        Security $security
     ) {
         parent::__construct($productRepository, $entityManager);
         $this->productRepository = $productRepository;
         $this->validator = $validator;
         $this->imageStorageService = $imageStorageService;
+        $this->security = $security;
     }
 
     #[Route('/products', methods: ['POST'])]
@@ -54,10 +59,14 @@ class ProductController extends CrudController
             return new Response('Invalid image type', Response::HTTP_BAD_REQUEST);
         }
 
+        $user = $this->security->getUser();
+
         $product = (new Product())
             ->setName($name)
             ->setCategory($category)
-            ->setPrice((float)$price);
+            ->setPrice((float)$price)
+            ->setUser($user)
+        ;
 
         $this->denyAccessUnlessGranted('PRODUCT_CREATE', $product);
 
