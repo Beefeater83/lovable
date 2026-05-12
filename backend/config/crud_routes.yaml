@@ -4,8 +4,6 @@ resources:
     operations: [R, D, L, P]
     path: /products
     export: true
-    requirements:
-      id: !php/const Symfony\Component\Routing\Requirement\Requirement::DIGITS
     security:
       P: [ ROLE_ADMIN ]
       D: [ ROLE_ADMIN ]

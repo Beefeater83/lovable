@@ -9,6 +9,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
@@ -28,9 +29,13 @@ class Product
     ];
 
     #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
+    #[ORM\Column(type: 'uuid', unique: true)]
+    private Uuid $id;
+
+    public function __construct()
+    {
+        $this->id = Uuid::v7();
+    }
 
     #[ORM\Column(length: 255, nullable: false)]
     #[Assert\NotBlank(
@@ -90,7 +95,7 @@ class Product
         return $this;
     }
 
-    public function getId(): ?int
+    public function getId(): Uuid
     {
         return $this->id;
     }
@@ -103,13 +108,6 @@ class Product
     public function setCategory(string $category): static
     {
         $this->category = $category;
-
-        return $this;
-    }
-
-    public function setId(?int $id): static
-    {
-        $this->id = $id;
 
         return $this;
     }
