@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1201ba1da28cbbec3584440c0d5d0d9e",
+    "content-hash": "a7c4c6c00157f2ea0c240eb33d9c3369",
     "packages": [
         {
             "name": "beefeater/crud-event-bundle",
-            "version": "2.3.0",
+            "version": "2.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Beefeater83/beefeater-crud-event-bundle.git",
-                "reference": "84494bd4f1e18acfc4405c3ca514a5985e916ff4"
+                "reference": "563af9ac16e3ed697a9735a08b0b80ea6b452a81"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Beefeater83/beefeater-crud-event-bundle/zipball/84494bd4f1e18acfc4405c3ca514a5985e916ff4",
-                "reference": "84494bd4f1e18acfc4405c3ca514a5985e916ff4",
+                "url": "https://api.github.com/repos/Beefeater83/beefeater-crud-event-bundle/zipball/563af9ac16e3ed697a9735a08b0b80ea6b452a81",
+                "reference": "563af9ac16e3ed697a9735a08b0b80ea6b452a81",
                 "shasum": ""
             },
             "require": {
@@ -61,9 +61,9 @@
             "description": "Event-based CRUDL bundle with configurable filtering, pagination, and sorting for Symfony applications",
             "support": {
                 "issues": "https://github.com/Beefeater83/beefeater-crud-event-bundle/issues",
-                "source": "https://github.com/Beefeater83/beefeater-crud-event-bundle/tree/2.3.0"
+                "source": "https://github.com/Beefeater83/beefeater-crud-event-bundle/tree/2.3.1"
             },
-            "time": "2026-04-21T11:46:50+00:00"
+            "time": "2026-05-12T08:24:10+00:00"
         },
         {
             "name": "composer/pcre",

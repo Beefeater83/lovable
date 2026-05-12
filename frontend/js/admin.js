@@ -68,7 +68,7 @@ function render(items) {
 }
 
 function renderRow(p) {
-    const isEditing = editingId === p.id;
+    const isEditing = String(editingId) === String(p.id);
 
     return `
     <div class="admin-row">
@@ -81,10 +81,10 @@ function renderRow(p) {
         : `<div class="admin-price">$${Number(p.price).toFixed(2)}</div>`}
       <div class="admin-actions">
         ${isEditing
-        ? `<button onclick="saveEdit(${p.id})">Save</button>
+        ? `<button onclick="saveEdit('${p.id}')">Save</button>
              <button onclick="cancelEdit()">Cancel</button>`
-        : `<button onclick="startEdit(${p.id})">Edit</button>
-             <button onclick="deleteProduct(${p.id})">Delete</button>`}
+        : `<button onclick="startEdit('${p.id}')">Edit</button>
+             <button onclick="deleteProduct('${p.id}')">Delete</button>`}
       </div>
     </div>
   `;
