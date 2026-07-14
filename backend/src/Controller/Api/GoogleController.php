@@ -24,6 +24,20 @@ class GoogleController extends AbstractController
     public function connectCheck()
     {
     }
+
+    #[Route('/me', name: 'auth_me', methods: ['GET'])]
+    public function me(): JsonResponse
+    {
+        if (!$this->getUser()) {
+            return $this->json([
+                'authenticated' => false,
+            ]);
+        }
+
+        return $this->json([
+            'authenticated' => true,
+        ]);
+    }
 /*
     #[Route('/admin/logout', methods: ['POST'])]
     public function logout(
