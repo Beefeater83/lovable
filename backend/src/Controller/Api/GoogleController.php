@@ -25,19 +25,6 @@ class GoogleController extends AbstractController
     {
     }
 
-    #[Route('/me', name: 'auth_me', methods: ['GET'])]
-    public function me(): JsonResponse
-    {
-        if (!$this->getUser()) {
-            return $this->json([
-                'authenticated' => false,
-            ]);
-        }
-
-        return $this->json([
-            'authenticated' => true,
-        ]);
-    }
 /*
     #[Route('/admin/logout', methods: ['POST'])]
     public function logout(

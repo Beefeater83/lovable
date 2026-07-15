@@ -318,11 +318,8 @@ function checkLoginResult() {
 }
 
 function loginWithGoogle() {
+    closeAuthModal();
     window.location.href = `${API_BASE}/api/connect/google`;
-}
-
-function openAuthModal() {
-    loginWithGoogle();
 }
 
 async function updateAuthButtons() {
@@ -338,6 +335,24 @@ async function updateAuthButtons() {
     authBtn.hidden = data.authenticated;
     logoutBtn.hidden = !data.authenticated;
 }
+
+function openAuthModal() {
+    document.getElementById('auth-modal').classList.add('show');
+}
+
+function closeAuthModal() {
+    document.getElementById('auth-modal').classList.remove('show');
+}
+
+const authModal = document.getElementById('auth-modal');
+
+authModal.addEventListener('click', function (e) {
+
+    if (e.target === authModal) {
+        closeAuthModal();
+    }
+
+});
 
 /*
 sessions security
