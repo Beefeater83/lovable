@@ -12,6 +12,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use KnpU\OAuth2ClientBundle\Security\Authenticator\OAuth2Authenticator;
 use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
 use League\OAuth2\Client\Provider\GoogleUser;
+use League\OAuth2\Client\Provider\GithubResourceOwner;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -49,10 +50,14 @@ class OAuthAuthenticator extends OAuth2Authenticator
 
         return new SelfValidatingPassport(
             new UserBadge($accessToken->getToken(), function () use ($client, $accessToken) {
-                /** @var GoogleUser $googleUser */
-                $googleUser = $client->fetchUserFromToken($accessToken);
 
-                $email = $googleUser->getEmail();
+                /** @var GoogleUser|GithubResourceOwner $oauthUser */
+                $oauthUser = $client->fetchUserFromToken($accessToken);
+
+                $email = $oauthUser->getEmail();
+                if (!$email) {
+                    throw new AuthenticationException('Email not available');
+                }
                 $user = $this->userRepository->findOneBy(['email' => $email]);
 
                 if (!$user) {
@@ -76,10 +81,18 @@ class OAuthAuthenticator extends OAuth2Authenticator
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
+        $route = $request->attributes->get('_route');
+
+        $provider = match ($route) {
+            'connect_google_check' => 'google',
+            'connect_github_check' => 'github',
+        };
+
         /** @var User $user */
         $user = $token->getUser();
-        $this->logger->info('User logged in via Google', [
-            'email' => $user->getEmail()
+        $this->logger->info('User logged in via OAuth', [
+            'provider' => $provider,
+            'email' => $user->getEmail(),
         ]);
 
         $accessToken = $this->jwtManager->create($user);

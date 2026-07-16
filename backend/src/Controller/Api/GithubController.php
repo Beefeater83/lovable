@@ -14,7 +14,7 @@ class GithubController extends AbstractController
     public function connectGithub(ClientRegistry $clientRegistry)
     {
         return $clientRegistry->getClient('github')
-            ->redirect(['email', 'profile']);
+            ->redirect(['user:email']);
     }
 
     #[Route('/connect/github/check', name: 'connect_github_check')]
