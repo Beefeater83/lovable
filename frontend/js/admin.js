@@ -354,6 +354,11 @@ authModal.addEventListener('click', function (e) {
 
 });
 
+function loginWithGithub() {
+    closeAuthModal();
+    window.location.href = `${API_BASE}/api/connect/github`;
+}
+
 /*
 sessions security
 async function logoutAdmin() {

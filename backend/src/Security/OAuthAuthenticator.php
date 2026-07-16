@@ -24,7 +24,7 @@ use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 use Psr\Log\LoggerInterface;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
-class GoogleAuthenticator extends OAuth2Authenticator
+class OAuthAuthenticator extends OAuth2Authenticator
 {
     public function __construct(
         private ClientRegistry $clientRegistry,
@@ -39,7 +39,12 @@ class GoogleAuthenticator extends OAuth2Authenticator
 
     public function authenticate(Request $request): SelfValidatingPassport
     {
-        $client = $this->clientRegistry->getClient('google');
+        $route = $request->attributes->get('_route');
+        $provider = match ($route) {
+            'connect_google_check' => 'google',
+            'connect_github_check' => 'github',
+        };
+        $client = $this->clientRegistry->getClient($provider);
         $accessToken = $this->fetchAccessToken($client);
 
         return new SelfValidatingPassport(
@@ -61,7 +66,12 @@ class GoogleAuthenticator extends OAuth2Authenticator
 
     public function supports(Request $request): ?bool
     {
-        return $request->attributes->get('_route') === 'connect_google_check';
+        //return $request->attributes->get('_route') === 'connect_google_check';
+        return in_array(
+            $request->attributes->get('_route'),
+            ['connect_google_check', 'connect_github_check'],
+            true
+        );
     }
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
