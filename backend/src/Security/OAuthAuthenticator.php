@@ -8,11 +8,10 @@ use App\Entity\RefreshToken;
 use App\Entity\User;
 use App\Event\UserLoggedInEvent;
 use App\Repository\UserRepository;
+use App\Services\OAuthEmailService;
 use Doctrine\ORM\EntityManagerInterface;
 use KnpU\OAuth2ClientBundle\Security\Authenticator\OAuth2Authenticator;
 use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
-use League\OAuth2\Client\Provider\GoogleUser;
-use League\OAuth2\Client\Provider\GithubResourceOwner;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -34,7 +33,8 @@ class OAuthAuthenticator extends OAuth2Authenticator
         private string $frontendUrl,
         private LoggerInterface $logger,
         private EntityManagerInterface $entityManager,
-        private EventDispatcherInterface $eventDispatcher
+        private EventDispatcherInterface $eventDispatcher,
+        private OAuthEmailService $authEmailService
     ) {
     }
 
@@ -49,15 +49,10 @@ class OAuthAuthenticator extends OAuth2Authenticator
         $accessToken = $this->fetchAccessToken($client);
 
         return new SelfValidatingPassport(
-            new UserBadge($accessToken->getToken(), function () use ($client, $accessToken) {
+            new UserBadge($accessToken->getToken(), function () use ($provider, $client, $accessToken) {
 
-                /** @var GoogleUser|GithubResourceOwner $oauthUser */
-                $oauthUser = $client->fetchUserFromToken($accessToken);
+                $email = $this->authEmailService->getEmail($provider, $client, $accessToken);
 
-                $email = $oauthUser->getEmail();
-                if (!$email) {
-                    throw new AuthenticationException('Email not available');
-                }
                 $user = $this->userRepository->findOneBy(['email' => $email]);
 
                 if (!$user) {
@@ -71,7 +66,6 @@ class OAuthAuthenticator extends OAuth2Authenticator
 
     public function supports(Request $request): ?bool
     {
-        //return $request->attributes->get('_route') === 'connect_google_check';
         return in_array(
             $request->attributes->get('_route'),
             ['connect_google_check', 'connect_github_check'],

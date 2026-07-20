@@ -5,7 +5,8 @@ Backend is built on top of my custom CRUD Event Bundle. Frontend is separated fr
 ## Authorization
 
 - Login is available only for users that already exist in the database and have assigned roles.
-- Login is via **`Google OAuth`** provider.
+- Login is supported via **`Google OAuth`** and  **`GitHub OAuth`**.
+- GitHub authentication resolves the user's **`primary verified email`**, allowing users with private email visibility to authenticate successfully.
 - After successful authentication, a custom domain event is dispatched, triggering a login notification email to the user.
 - After successful login, a JWT token is issued and stored in `HttpOnly cookies` (access + refresh flow).
 - Access token lifetime: **5 minutes**
@@ -20,4 +21,8 @@ Backend is built on top of my custom CRUD Event Bundle. Frontend is separated fr
 - If you’re logged in but don’t have the proper role, the API returns **403**.
 - If you are not authenticated, the API returns **401**
 - Export products to XLSX (public access)
+
+## OAuth providers
+- Google OAuth
+- GitHub OAuth (supports accounts with private email visibility by resolving the primary verified email through the GitHub API)
 
