@@ -8,10 +8,10 @@ use App\Entity\RefreshToken;
 use App\Entity\User;
 use App\Event\UserLoggedInEvent;
 use App\Repository\UserRepository;
+use App\Services\OAuthEmailService;
 use Doctrine\ORM\EntityManagerInterface;
 use KnpU\OAuth2ClientBundle\Security\Authenticator\OAuth2Authenticator;
 use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
-use League\OAuth2\Client\Provider\GoogleUser;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -24,7 +24,7 @@ use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 use Psr\Log\LoggerInterface;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
-class GoogleAuthenticator extends OAuth2Authenticator
+class OAuthAuthenticator extends OAuth2Authenticator
 {
     public function __construct(
         private ClientRegistry $clientRegistry,
@@ -33,21 +33,26 @@ class GoogleAuthenticator extends OAuth2Authenticator
         private string $frontendUrl,
         private LoggerInterface $logger,
         private EntityManagerInterface $entityManager,
-        private EventDispatcherInterface $eventDispatcher
+        private EventDispatcherInterface $eventDispatcher,
+        private OAuthEmailService $authEmailService
     ) {
     }
 
     public function authenticate(Request $request): SelfValidatingPassport
     {
-        $client = $this->clientRegistry->getClient('google');
+        $route = $request->attributes->get('_route');
+        $provider = match ($route) {
+            'connect_google_check' => 'google',
+            'connect_github_check' => 'github',
+        };
+        $client = $this->clientRegistry->getClient($provider);
         $accessToken = $this->fetchAccessToken($client);
 
         return new SelfValidatingPassport(
-            new UserBadge($accessToken->getToken(), function () use ($client, $accessToken) {
-                /** @var GoogleUser $googleUser */
-                $googleUser = $client->fetchUserFromToken($accessToken);
+            new UserBadge($accessToken->getToken(), function () use ($provider, $client, $accessToken) {
 
-                $email = $googleUser->getEmail();
+                $email = $this->authEmailService->getEmail($provider, $client, $accessToken);
+
                 $user = $this->userRepository->findOneBy(['email' => $email]);
 
                 if (!$user) {
@@ -61,15 +66,27 @@ class GoogleAuthenticator extends OAuth2Authenticator
 
     public function supports(Request $request): ?bool
     {
-        return $request->attributes->get('_route') === 'connect_google_check';
+        return in_array(
+            $request->attributes->get('_route'),
+            ['connect_google_check', 'connect_github_check'],
+            true
+        );
     }
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
+        $route = $request->attributes->get('_route');
+
+        $provider = match ($route) {
+            'connect_google_check' => 'google',
+            'connect_github_check' => 'github',
+        };
+
         /** @var User $user */
         $user = $token->getUser();
-        $this->logger->info('User logged in via Google', [
-            'email' => $user->getEmail()
+        $this->logger->info('User logged in via OAuth', [
+            'provider' => $provider,
+            'email' => $user->getEmail(),
         ]);
 
         $accessToken = $this->jwtManager->create($user);

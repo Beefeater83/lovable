@@ -15,7 +15,7 @@ security:
         main:
             lazy: true
             provider: user_provider
-            custom_authenticator: App\Security\GoogleAuthenticator
+            custom_authenticator: App\Security\OAuthAuthenticator
             stateless: true
             jwt: ~
     role_hierarchy:

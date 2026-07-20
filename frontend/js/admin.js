@@ -14,6 +14,7 @@ function logoutAdmin() {
     })
         .then(() => {
             showError('Logged out.');
+            updateAuthButtons();
         })
         .catch(() => {
             showError('Logout failed');
@@ -305,6 +306,7 @@ function checkLoginResult() {
 
     if (login === 'success') {
         showError('Authenticated. Your access will be checked per action.');
+        updateAuthButtons();
         fetchProducts();
     } else if (login === 'failed') {
         showError('Login failed');
@@ -315,10 +317,46 @@ function checkLoginResult() {
     }
 }
 
-checkLoginResult();
-
 function loginWithGoogle() {
+    closeAuthModal();
     window.location.href = `${API_BASE}/api/connect/google`;
+}
+
+async function updateAuthButtons() {
+    const authBtn = document.getElementById('auth-btn');
+    const logoutBtn = document.getElementById('logout-btn');
+
+    const res = await fetch(`${API_BASE}/api/me`, {
+        credentials: 'include'
+    });
+
+    const data = await res.json();
+
+    authBtn.hidden = data.authenticated;
+    logoutBtn.hidden = !data.authenticated;
+}
+
+function openAuthModal() {
+    document.getElementById('auth-modal').classList.add('show');
+}
+
+function closeAuthModal() {
+    document.getElementById('auth-modal').classList.remove('show');
+}
+
+const authModal = document.getElementById('auth-modal');
+
+authModal.addEventListener('click', function (e) {
+
+    if (e.target === authModal) {
+        closeAuthModal();
+    }
+
+});
+
+function loginWithGithub() {
+    closeAuthModal();
+    window.location.href = `${API_BASE}/api/connect/github`;
 }
 
 /*
@@ -338,4 +376,6 @@ async function logoutAdmin() {
 }
  */
 
+checkLoginResult();
+updateAuthButtons();
 fetchProducts();

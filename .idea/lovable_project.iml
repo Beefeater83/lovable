@@ -155,6 +155,7 @@
       <excludeFolder url="file://$MODULE_DIR$/backend/vendor/symfony/security-http" />
       <excludeFolder url="file://$MODULE_DIR$/backend/vendor/gedmo/doctrine-extensions" />
       <excludeFolder url="file://$MODULE_DIR$/backend/vendor/stof/doctrine-extensions-bundle" />
+      <excludeFolder url="file://$MODULE_DIR$/backend/vendor/league/oauth2-github" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

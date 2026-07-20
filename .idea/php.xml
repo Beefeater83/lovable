@@ -168,6 +168,7 @@
       <path value="$PROJECT_DIR$/backend/vendor/doctrine/event-manager" />
       <path value="$PROJECT_DIR$/backend/vendor/gedmo/doctrine-extensions" />
       <path value="$PROJECT_DIR$/backend/vendor/stof/doctrine-extensions-bundle" />
+      <path value="$PROJECT_DIR$/backend/vendor/league/oauth2-github" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="8.2">

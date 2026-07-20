@@ -43,7 +43,7 @@ services:
         tags:
             - { name: kernel.event_listener, event: 'products.delete.after_remove',  method: onAfterDelete }
 
-    App\Security\GoogleAuthenticator:
+    App\Security\OAuthAuthenticator:
         arguments:
             $frontendUrl: '%frontend_url%'
             $logger: '@monolog.logger.security'

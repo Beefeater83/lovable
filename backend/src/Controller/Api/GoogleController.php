@@ -24,24 +24,4 @@ class GoogleController extends AbstractController
     public function connectCheck()
     {
     }
-/*
-    #[Route('/admin/logout', methods: ['POST'])]
-    public function logout(
-        RequestStack $requestStack,
-        TokenStorageInterface $tokenStorage
-    ): JsonResponse {
-
-        $session = $requestStack->getSession();
-
-        if ($session) {
-            $session->remove('_security_main');
-            $session->clear();
-            $session->invalidate();
-        }
-
-        $tokenStorage->setToken(null);
-
-        return new JsonResponse(['success' => true]);
-    }
-*/
 }
