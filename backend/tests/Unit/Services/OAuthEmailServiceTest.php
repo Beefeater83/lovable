@@ -35,7 +35,6 @@ class OAuthEmailServiceTest extends TestCase
         $service = new OAuthEmailService($httpClient);
         $email = $service->getEmail('google', $client, $accessToken);
         $this->assertSame('test@gmail.com', $email);
-
     }
 
     public function testReturnGithubPrimaryVerifiedEmail(): void

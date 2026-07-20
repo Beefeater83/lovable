@@ -51,7 +51,7 @@ class OAuthEmailService
             'https://api.github.com/user/emails',
             [
                 'headers' => [
-                    'Authorization' => 'Bearer '.$accessToken->getToken(),
+                    'Authorization' => 'Bearer ' . $accessToken->getToken(),
                     'Accept' => 'application/vnd.github+json',
                 ],
             ]
