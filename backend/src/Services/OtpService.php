@@ -16,14 +16,14 @@ class OtpService
         private UserRepository $userRepository,
         private TwigEnvironment $twig,
         private MailerInterface $mailer
-    ){
+    ) {
     }
 
     public function sendOtp(string $email): bool
     {
         $user = $this->userRepository->findOneBy(['email' => $email]);
 
-        if (!$user){
+        if (!$user) {
             return false;
         }
 

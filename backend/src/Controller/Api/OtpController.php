@@ -13,9 +13,7 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class OtpController extends AbstractController
 {
-    public function __construct(
-      private OtpService $otpService
-    ){
+    public function __construct(private OtpService $otpService) {
     }
     #[Route('/iam/otp', name: 'request_otp', methods: ['POST'])]
     public function requestOtp(Request $request): JsonResponse
