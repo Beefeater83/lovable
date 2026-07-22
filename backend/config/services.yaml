@@ -48,7 +48,16 @@ services:
             $frontendUrl: '%frontend_url%'
             $logger: '@monolog.logger.security'
 
+    App\Security\OtpAuthenticator:
+        arguments:
+            $frontendUrl: '%frontend_url%'
+            $logger: '@monolog.logger.security'
+
     App\Security\ProductVoter:
+        arguments:
+            $logger: '@monolog.logger.security'
+
+    App\Services\OtpService:
         arguments:
             $logger: '@monolog.logger.security'
 

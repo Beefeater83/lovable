@@ -13,8 +13,10 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class OtpController extends AbstractController
 {
-    public function __construct(private OtpService $otpService) {
+    public function __construct(private OtpService $otpService)
+    {
     }
+
     #[Route('/iam/otp', name: 'request_otp', methods: ['POST'])]
     public function requestOtp(Request $request): JsonResponse
     {
@@ -27,9 +29,12 @@ class OtpController extends AbstractController
 
         $success = $this->otpService->sendOtp($email);
 
-        return $this->json(
-            null,
-            $success ? Response::HTTP_OK : Response::HTTP_NOT_FOUND
-        );
+        return $this->json(null, $success ? Response::HTTP_OK : Response::HTTP_NOT_FOUND);
     }
+
+    #[Route('/iam/otp-verification', name: 'verification_otp', methods: ['POST'])]
+    public function verifyOtp(Request $request): void
+    {
+    }
+
 }
