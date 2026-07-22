@@ -36,5 +36,4 @@ class OtpController extends AbstractController
     public function verifyOtp(Request $request): void
     {
     }
-
 }
