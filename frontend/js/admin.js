@@ -342,6 +342,12 @@ function openAuthModal() {
 
 function closeAuthModal() {
     document.getElementById('auth-modal').classList.remove('show');
+    document.getElementById('otp-email').value = '';
+    document.getElementById('otp-code').value = '';
+
+    document.getElementById('otp-section').hidden = true;
+
+    setOtpMessage('');
 }
 
 const authModal = document.getElementById('auth-modal');
@@ -359,22 +365,96 @@ function loginWithGithub() {
     window.location.href = `${API_BASE}/api/connect/github`;
 }
 
-/*
-sessions security
-async function logoutAdmin() {
-    const res = await fetch(`${API_BASE}/api/admin/logout`, {
-        method: 'POST',
-        credentials: 'include'
-    });
+async function requestOtp() {
 
-    if (!res.ok) {
-        showError('Logout failed');
+    setOtpMessage('');
+
+    document.getElementById('otp-code').value = '';
+    document.getElementById('otp-section').hidden = true;
+
+    const email = document.getElementById('otp-email').value.trim();
+
+    if (!email) {
+        setOtpMessage('Enter email');
         return;
     }
 
-    showError('Logged out');
+    try {
+        const res = await fetch(`${API_BASE}/api/iam/otp`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ email })
+        });
+
+        console.log('OTP response status:', res.status);
+
+        if (res.status === 200) {
+            document.getElementById('otp-section').hidden = false;
+            document.getElementById('otp-code').focus();
+            setOtpMessage('Verification code sent. It is valid for 5 minutes.');
+            return;
+        }
+
+        if (res.status === 404) {
+            setOtpMessage('User not found.');
+            return;
+        }
+
+        setOtpMessage(`Server error (${res.status}).`);
+    } catch (e) {
+        console.error('OTP request failed:', e);
+        setOtpMessage('Network error. Check backend and CORS.');
+    }
 }
- */
+
+async function verifyOtp() {
+
+    const email = document.getElementById('otp-email').value.trim();
+    const otp = document.getElementById('otp-code').value.trim();
+
+    if (!otp) {
+        setOtpMessage('Enter verification code.');
+        return;
+    }
+
+    try {
+
+        const res = await fetch(`${API_BASE}/api/iam/otp-verification`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include',
+            body: JSON.stringify({
+                email,
+                otp
+            })
+        });
+
+        if (res.ok) {
+            window.location.href = '/admin?login=success';
+            return;
+        }
+
+        if (res.status === 401) {
+            document.getElementById('otp-code').value = '';
+            document.getElementById('otp-section').hidden = true;
+            setOtpMessage('Invalid or expired verification code.');
+            return;
+        }
+
+        setOtpMessage('Verification failed.');
+
+    } catch (e) {
+        setOtpMessage('Network error.');
+    }
+}
+
+function setOtpMessage(message) {
+    document.getElementById('otp-message').textContent = message;
+}
 
 checkLoginResult();
 updateAuthButtons();

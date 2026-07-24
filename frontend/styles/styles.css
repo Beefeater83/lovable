@@ -402,3 +402,86 @@ h1 {
 [hidden] {
     display: none !important;
 }
+
+/******************************************************/
+
+.auth-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: #3f3f46;
+}
+
+.auth-divider span {
+    color: #71717a;
+    font-size: .85rem;
+}
+
+.otp-login {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.otp-login h3 {
+    margin: 0;
+    color: white;
+    font-size: 1rem;
+    font-weight: 600;
+    text-align: center;
+}
+
+.auth-input {
+    width: 100%;
+    height: 46px;
+    padding: 0 14px;
+    border-radius: 10px;
+    border: 1px solid #3f3f46;
+    background: #0f1117;
+    color: white;
+    font-size: .95rem;
+}
+
+.auth-input:focus {
+    outline: none;
+    border-color: #22c55e;
+}
+
+.otp-btn {
+    height: 46px;
+}
+
+.otp-section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    animation: fadeOtp .25s ease;
+}
+
+@keyframes fadeOtp {
+
+    from {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+}
+
+.otp-message {
+    min-height: 18px;
+    color: #22c55e;
+    text-align: center;
+    font-size: .85rem;
+}

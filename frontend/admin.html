@@ -37,10 +37,51 @@
                     <span>Continue with GitHub</span>
                 </button>
 
+                <div class="auth-divider">
+                    <span>or</span>
+                </div>
+
+                <div class="otp-login">
+
+                    <h3>Sign in with one-time code</h3>
+
+                    <input
+                            id="otp-email"
+                            class="auth-input"
+                            type="email"
+                            placeholder="Email address"
+                    />
+
+                    <button
+                            class="auth-provider otp-btn"
+                            onclick="requestOtp()">
+                        Send verification code
+                    </button>
+
+                    <div id="otp-section" class="otp-section" hidden>
+
+                        <input
+                                id="otp-code"
+                                class="auth-input"
+                                type="text"
+                                maxlength="6"
+                                placeholder="Verification code"
+                        />
+
+                        <button
+                                class="auth-provider otp-btn"
+                                onclick="verifyOtp()">
+                            Verify and sign in
+                        </button>
+
+                    </div>
+
+                    <div id="otp-message" class="otp-message"></div>
+                </div>
+
                 <button class="auth-cancel" onclick="closeAuthModal()">
                     Cancel
                 </button>
-
             </div>
         </div>
     </div>

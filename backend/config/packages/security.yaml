@@ -15,7 +15,9 @@ security:
         main:
             lazy: true
             provider: user_provider
-            custom_authenticator: App\Security\OAuthAuthenticator
+            custom_authenticators:
+                - App\Security\OAuthAuthenticator
+                - App\Security\OtpAuthenticator
             stateless: true
             jwt: ~
     role_hierarchy:
