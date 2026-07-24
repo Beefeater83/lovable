@@ -56,7 +56,7 @@ class OtpService
         $message = (new Email())
             ->from('no-reply@diakonov-it.com.ua')
             ->to($email)
-            ->subject('Your confirmation code')
+            ->subject('Your verification code for security.diakonov-it.com.ua')
             ->html($html);
 
         $this->mailer->send($message);
@@ -64,7 +64,7 @@ class OtpService
 
     private function saveOtp(string $email, int $code): void
     {
-        $item = $this->cache->getItem('otp_' . $email);
+        $item = $this->cache->getItem($this->getCacheKey($email));
 
         $item->set($code);
         $item->expiresAfter(300);
@@ -74,12 +74,12 @@ class OtpService
 
     private function deleteOtp(string $email): void
     {
-        $this->cache->deleteItem('otp_' . $email);
+        $this->cache->deleteItem($this->getCacheKey($email));
     }
 
     public function verificationOtp(string $email, string $code): bool
     {
-        $item = $this->cache->getItem('otp_' . $email);
+        $item = $this->cache->getItem($this->getCacheKey($email));
 
         if (!$item->isHit()) {
             return false;
@@ -89,5 +89,10 @@ class OtpService
         $this->deleteOtp($email);
 
         return $isValid;
+    }
+
+    private function getCacheKey(string $email): string
+    {
+        return 'otp_' . md5(strtolower($email));
     }
 }

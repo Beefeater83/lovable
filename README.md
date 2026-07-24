@@ -5,8 +5,12 @@ Backend is built on top of my custom CRUD Event Bundle. Frontend is separated fr
 ## Authorization
 
 - Login is available only for users that already exist in the database and have assigned roles.
-- Login is supported via **`Google OAuth`** and  **`GitHub OAuth`**.
+- Login is supported via:
+  - **`Google OAuth`**
+  - **`GitHub OAuth`**
+  - **`One-Time Password (OTP) delivered via email`**
 - GitHub authentication resolves the user's **`primary verified email`**, allowing users with private email visibility to authenticate successfully.
+- OTP authentication is available only for registered users. A **6-digit verification code** is sent to the user's email, is valid for **5 minutes**, and can be used only once.
 - After successful authentication, a custom domain event is dispatched, triggering a login notification email to the user.
 - After successful login, a JWT token is issued and stored in `HttpOnly cookies` (access + refresh flow).
 - Access token lifetime: **5 minutes**
@@ -25,4 +29,5 @@ Backend is built on top of my custom CRUD Event Bundle. Frontend is separated fr
 ## OAuth providers
 - Google OAuth
 - GitHub OAuth (supports accounts with private email visibility by resolving the primary verified email through the GitHub API)
+- One-Time Password (OTP) via email
 

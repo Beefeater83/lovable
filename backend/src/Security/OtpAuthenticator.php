@@ -12,6 +12,7 @@ use App\Services\OtpService;
 use Doctrine\ORM\EntityManagerInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Component\HttpFoundation\Cookie;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -90,7 +91,9 @@ class OtpAuthenticator extends AbstractAuthenticator
 
         $this->eventDispatcher->dispatch(new UserLoggedInEvent($user));
 
-        $response = new RedirectResponse($this->frontendUrl . '?login=success');
+        $response = new JsonResponse([
+            'success' => true,
+        ]);
 
         $response->headers->setCookie(
             Cookie::create('access_token', $accessToken, new \DateTime('+5 minutes'))
@@ -115,8 +118,8 @@ class OtpAuthenticator extends AbstractAuthenticator
             'reason' => $exception->getMessage(),
         ]);
 
-        return new RedirectResponse(
-            $this->frontendUrl . '?login=failed'
-        );
+        return new JsonResponse([
+            'success' => false,
+        ], Response::HTTP_UNAUTHORIZED);
     }
 }
