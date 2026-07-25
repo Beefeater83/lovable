@@ -50,7 +50,6 @@ services:
 
     App\Security\OtpAuthenticator:
         arguments:
-            $frontendUrl: '%frontend_url%'
             $logger: '@monolog.logger.security'
 
     App\Security\ProductVoter:
