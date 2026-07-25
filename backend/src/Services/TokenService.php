@@ -4,19 +4,37 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Entity\RefreshToken;
+use App\Entity\User;
 use App\Repository\RefreshTokenRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 
 class TokenService
 {
-    private RefreshTokenRepository $refreshTokenRepository;
-    private JWTTokenManagerInterface $jwtManager;
     public function __construct(
-        RefreshTokenRepository $refreshTokenRepository,
-        JWTTokenManagerInterface $jwtManager
+        private RefreshTokenRepository $refreshTokenRepository,
+        private JWTTokenManagerInterface $jwtManager,
+        private EntityManagerInterface $entityManager,
     ) {
-        $this->refreshTokenRepository = $refreshTokenRepository;
-        $this->jwtManager = $jwtManager;
+    }
+
+    public function createAccessToken(User $user): string
+    {
+        return $this->jwtManager->create($user);
+    }
+
+    public function createRefreshToken(User $user): string
+    {
+        $refreshTokenValue = bin2hex(random_bytes(32));
+        $refresh = new RefreshToken();
+        $refresh->setToken($refreshTokenValue);
+        $refresh->setUser($user);
+        $refresh->setExpiresAt(new \DateTimeImmutable('+1 hours'));
+        $this->entityManager->persist($refresh);
+        $this->entityManager->flush();
+
+        return $refreshTokenValue;
     }
 
     public function refresh(?string $tokenValue): array

@@ -4,16 +4,13 @@ declare(strict_types=1);
 
 namespace App\Security;
 
-use App\Entity\RefreshToken;
 use App\Entity\User;
 use App\Event\UserLoggedInEvent;
 use App\Repository\UserRepository;
+use App\Services\CookieService;
 use App\Services\OtpService;
-use Doctrine\ORM\EntityManagerInterface;
-use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
-use Symfony\Component\HttpFoundation\Cookie;
+use App\Services\TokenService;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
@@ -28,12 +25,11 @@ class OtpAuthenticator extends AbstractAuthenticator
 {
     public function __construct(
         private UserRepository $userRepository,
-        private JWTTokenManagerInterface $jwtManager,
-        private string $frontendUrl,
         private LoggerInterface $logger,
-        private EntityManagerInterface $entityManager,
         private EventDispatcherInterface $eventDispatcher,
-        private OtpService $otpService
+        private OtpService $otpService,
+        private TokenService $tokenService,
+        private CookieService $cookieService,
     ) {
     }
 
@@ -80,14 +76,8 @@ class OtpAuthenticator extends AbstractAuthenticator
             'email' => $user->getEmail(),
         ]);
 
-        $accessToken = $this->jwtManager->create($user);
-        $refreshTokenValue = bin2hex(random_bytes(32));
-        $refresh = new RefreshToken();
-        $refresh->setToken($refreshTokenValue);
-        $refresh->setUser($user);
-        $refresh->setExpiresAt(new \DateTimeImmutable('+1 hours'));
-        $this->entityManager->persist($refresh);
-        $this->entityManager->flush();
+        $accessToken = $this->tokenService->createAccessToken($user);
+        $refreshTokenValue = $this->tokenService->createRefreshToken($user);
 
         $this->eventDispatcher->dispatch(new UserLoggedInEvent($user));
 
@@ -96,17 +86,11 @@ class OtpAuthenticator extends AbstractAuthenticator
         ]);
 
         $response->headers->setCookie(
-            Cookie::create('access_token', $accessToken, new \DateTime('+5 minutes'))
-                ->withHttpOnly(true)
-                ->withSecure(true)
-                ->withPath('/')
+            $this->cookieService->createAccessCookie($accessToken)
         );
 
         $response->headers->setCookie(
-            Cookie::create('refresh_token', $refreshTokenValue, new \DateTime('+1 hours'))
-                ->withHttpOnly(true)
-                ->withSecure(true)
-                ->withPath('/')
+            $this->cookieService->createRefreshCookie($refreshTokenValue)
         );
 
         return $response;
