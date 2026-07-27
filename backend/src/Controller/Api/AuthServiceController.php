@@ -65,8 +65,11 @@ class AuthServiceController extends AbstractController
             ]);
         }
 
+        $user = $this->getUser();
+
         return $this->json([
             'authenticated' => true,
+            'name' => $user->getName()
         ]);
     }
 }

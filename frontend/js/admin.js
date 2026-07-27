@@ -325,6 +325,7 @@ function loginWithGoogle() {
 async function updateAuthButtons() {
     const authBtn = document.getElementById('auth-btn');
     const logoutBtn = document.getElementById('logout-btn');
+    const userSpan = document.getElementById('admin-user');
 
     const res = await fetch(`${API_BASE}/api/me`, {
         credentials: 'include'
@@ -334,6 +335,10 @@ async function updateAuthButtons() {
 
     authBtn.hidden = data.authenticated;
     logoutBtn.hidden = !data.authenticated;
+
+    userSpan.textContent = data.authenticated
+        ? `(${data.name})`
+        : '';
 }
 
 function openAuthModal() {
