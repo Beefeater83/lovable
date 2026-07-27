@@ -10,7 +10,7 @@ class CookieService
 {
     public function createAccessCookie(string $accessToken): Cookie
     {
-        return Cookie::create('access_token', $accessToken, new \DateTime('+5 minutes'))
+        return Cookie::create('access_token', $accessToken, new \DateTimeImmutable('+5 minutes'))
             ->withHttpOnly(true)
             ->withSecure(true)
             ->withPath('/');
@@ -18,7 +18,7 @@ class CookieService
 
     public function createRefreshCookie(string $refreshTokenValue): Cookie
     {
-        return Cookie::create('refresh_token', $refreshTokenValue, new \DateTime('+1 hours'))
+        return Cookie::create('refresh_token', $refreshTokenValue, new \DateTimeImmutable('+1 hours'))
             ->withHttpOnly(true)
             ->withSecure(true)
             ->withPath('/');

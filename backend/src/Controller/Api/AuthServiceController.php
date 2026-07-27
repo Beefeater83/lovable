@@ -11,11 +11,14 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\Routing\Annotation\Route;
+use App\Services\CookieService;
 
 class AuthServiceController extends AbstractController
 {
-    public function __construct(private TokenService $authService)
-    {
+    public function __construct(
+        private TokenService $authService,
+        private CookieService $cookieService,
+    ) {
     }
 
     #[Route('/refresh', name: 'api_refresh', methods: ['POST'])]
@@ -33,10 +36,7 @@ class AuthServiceController extends AbstractController
             && trim($result['accessToken']) !== ''
         ) {
             $response->headers->setCookie(
-                Cookie::create('access_token', $result['accessToken'], new \DateTimeImmutable('+5 minutes'))
-                    ->withHttpOnly(true)
-                    ->withSecure(true)
-                    ->withPath('/')
+                $this->cookieService->createAccessCookie($result['accessToken'])
             );
         }
 
