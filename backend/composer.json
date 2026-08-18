@@ -50,7 +50,8 @@
         "symfony/web-link": "7.2.*",
         "symfony/yaml": "7.2.*",
         "twig/extra-bundle": "^2.12|^3.23",
-        "twig/twig": "^2.12|^3.23"
+        "twig/twig": "^2.12|^3.23",
+        "web-auth/webauthn-lib": "^5.3"
     },
     "config": {
         "allow-plugins": {
