@@ -174,7 +174,8 @@ class PasskeyService
             $this->logger->error('WebAuthn attestation verification failed', [
                 'exception' => $e->getMessage(),
             ]);
-            throw new PasskeyValidationException('WebAuthn registration verification failed: ' . $e->getMessage(), 0, $e);
+            throw new PasskeyValidationException('WebAuthn registration verification failed: '
+                . $e->getMessage(), 0, $e);
         }
 
         $name = (!empty($customName) && trim($customName) !== '')
@@ -286,7 +287,8 @@ class PasskeyService
             $this->logger->error('WebAuthn assertion verification failed', [
                 'exception' => $e->getMessage(),
             ]);
-            throw new PasskeyValidationException('WebAuthn authentication verification failed: ' . $e->getMessage(), 0, $e);
+            throw new PasskeyValidationException('WebAuthn authentication verification failed: '
+                . $e->getMessage(), 0, $e);
         }
 
         $passkey->setCounter($updatedRecord->counter);

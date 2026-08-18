@@ -100,7 +100,10 @@ class PasskeyControllerTest extends TestCase
         );
 
         $serializer = $this->createMock(SerializerInterface::class);
-        $serializer->expects($this->once())->method('serialize')->with($options, 'json')->willReturn('{"challenge":"..."}');
+        $serializer->expects($this->once())
+            ->method('serialize')
+            ->with($options, 'json')
+            ->willReturn('{"challenge":"..."}');
 
         $this->passkeyService
             ->expects($this->once())
@@ -132,7 +135,9 @@ class PasskeyControllerTest extends TestCase
         $this->passkeyService
             ->expects($this->once())
             ->method('verifyRegistration')
-            ->willThrowException(new DuplicatePasskeyException('Passkey with this credential ID is already registered'));
+            ->willThrowException(new DuplicatePasskeyException(
+                'Passkey with this credential ID is already registered'
+            ));
 
         $response = $this->controller->registrationVerify($request);
         $this->assertSame(Response::HTTP_CONFLICT, $response->getStatusCode());
@@ -176,7 +181,10 @@ class PasskeyControllerTest extends TestCase
         $options = PublicKeyCredentialRequestOptions::create('challenge-bytes', 'localhost');
 
         $serializer = $this->createMock(SerializerInterface::class);
-        $serializer->expects($this->once())->method('serialize')->with($options, 'json')->willReturn('{"challenge":"..."}');
+        $serializer->expects($this->once())
+            ->method('serialize')
+            ->with($options, 'json')
+            ->willReturn('{"challenge":"..."}');
 
         $this->passkeyService
             ->expects($this->once())

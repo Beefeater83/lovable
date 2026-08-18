@@ -49,7 +49,8 @@ class PasskeyCredentialMapper
     {
         $trustPathData = $passkey->getTrustPath();
         $trustPath = match (true) {
-            isset($trustPathData['x5c']) && is_array($trustPathData['x5c']) => CertificateTrustPath::create($trustPathData['x5c']),
+            isset($trustPathData['x5c'])
+            && is_array($trustPathData['x5c']) => CertificateTrustPath::create($trustPathData['x5c']),
             default => EmptyTrustPath::create(),
         };
 
