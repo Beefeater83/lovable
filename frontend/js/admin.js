@@ -324,6 +324,7 @@ function loginWithGoogle() {
 
 async function updateAuthButtons() {
     const authBtn = document.getElementById('auth-btn');
+    const passkeyBtn = document.getElementById('passkey-btn');
     const logoutBtn = document.getElementById('logout-btn');
     const userSpan = document.getElementById('admin-user');
 
@@ -334,6 +335,7 @@ async function updateAuthButtons() {
     const data = await res.json();
 
     authBtn.hidden = data.authenticated;
+    passkeyBtn.hidden = !data.authenticated;
     logoutBtn.hidden = !data.authenticated;
 
     userSpan.textContent = data.authenticated
@@ -459,6 +461,150 @@ async function verifyOtp() {
 
 function setOtpMessage(message) {
     document.getElementById('otp-message').textContent = message;
+}
+
+/********************PASSKEY********************************/
+
+async function loginWithPasskey() {
+    clearError();
+
+    try {
+        const res = await fetch(`${API_BASE}/api/iam/passkey/authentication/options`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        const options = await res.json();
+
+        if (!res.ok) {
+            showError(options.error || 'Failed to start Passkey authentication');
+            return;
+        }
+
+        const credential = await navigator.credentials.get({
+            publicKey: decodeAuthenticationOptions(options)
+        });
+
+        const verifyRes = await fetch(`${API_BASE}/api/iam/passkey/authentication/verify`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include',
+            body: JSON.stringify({
+                credential: encodeCredential(credential)
+            })
+        });
+
+        const data = await verifyRes.json();
+
+        if (!verifyRes.ok) {
+            showError(data.error || 'Passkey authentication failed');
+            return;
+        }
+
+        closeAuthModal();
+        window.location.href = '/admin?login=success';
+
+    } catch (e) {
+        console.error('Passkey authentication failed:', e);
+        showError(
+            e.name === 'NotAllowedError'
+                ? 'Passkey authentication was cancelled.'
+                : 'Passkey authentication failed.'
+        );
+    }
+}
+
+function decodeAuthenticationOptions(options) {
+    options.challenge = base64urlToUint8Array(options.challenge);
+
+    if (options.allowCredentials) {
+        options.allowCredentials = options.allowCredentials.map(credential => ({
+            ...credential,
+            id: base64urlToUint8Array(credential.id)
+        }));
+    }
+
+    return options;
+}
+
+function encodeCredential(credential) {
+    return {
+        id: credential.id,
+        rawId: uint8ArrayToBase64url(new Uint8Array(credential.rawId)),
+        type: credential.type,
+        response: {
+            clientDataJSON: uint8ArrayToBase64url(
+                new Uint8Array(credential.response.clientDataJSON)
+            ),
+            authenticatorData: uint8ArrayToBase64url(
+                new Uint8Array(credential.response.authenticatorData)
+            ),
+            signature: uint8ArrayToBase64url(
+                new Uint8Array(credential.response.signature)
+            ),
+            userHandle: credential.response.userHandle
+                ? uint8ArrayToBase64url(new Uint8Array(credential.response.userHandle))
+                : null
+        }
+    };
+}
+
+function base64urlToUint8Array(base64url) {
+    const padding = '='.repeat((4 - base64url.length % 4) % 4);
+    const base64 = (base64url + padding)
+        .replace(/-/g, '+')
+        .replace(/_/g, '/');
+
+    return Uint8Array.from(atob(base64), c => c.charCodeAt(0));
+}
+
+function uint8ArrayToBase64url(bytes) {
+    let binary = '';
+
+    bytes.forEach(byte => {
+        binary += String.fromCharCode(byte);
+    });
+
+    return btoa(binary)
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_')
+        .replace(/=/g, '');
+}
+
+async function createPasskey() {
+    clearError();
+
+    try {
+        const optionsRes = await fetch(
+            `${API_BASE}/api/iam/passkey/registration/options`,
+            {
+                method: 'POST',
+                credentials: 'include'
+            }
+        );
+
+        const options = await optionsRes.json();
+
+        if (!optionsRes.ok) {
+            showError(options.error || 'Failed to start Passkey registration');
+            return;
+        }
+
+        // Здесь navigator.credentials.create(...)
+        // и затем POST /registration/verify
+
+    } catch (e) {
+        console.error('Passkey registration failed:', e);
+        showError(
+            e.name === 'NotAllowedError'
+                ? 'Passkey registration was cancelled.'
+                : 'Passkey registration failed.'
+        );
+    }
 }
 
 checkLoginResult();
