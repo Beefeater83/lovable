@@ -594,16 +594,67 @@ async function createPasskey() {
             return;
         }
 
-        // Здесь navigator.credentials.create(...)
-        // и затем POST /registration/verify
+        options.challenge = base64urlToUint8Array(options.challenge);
+
+        options.user.id = base64urlToUint8Array(options.user.id);
+
+        if (options.excludeCredentials) {
+            options.excludeCredentials = options.excludeCredentials.map(credential => ({
+                ...credential,
+                id: base64urlToUint8Array(credential.id)
+            }));
+        }
+
+        const credential = await navigator.credentials.create({
+            publicKey: options
+        });
+
+        const credentialData = {
+            id: credential.id,
+            rawId: uint8ArrayToBase64url(new Uint8Array(credential.rawId)),
+            type: credential.type,
+            response: {
+                clientDataJSON: uint8ArrayToBase64url(
+                    new Uint8Array(credential.response.clientDataJSON)
+                ),
+                attestationObject: uint8ArrayToBase64url(
+                    new Uint8Array(credential.response.attestationObject)
+                )
+            }
+        };
+
+        const verifyRes = await fetch(
+            `${API_BASE}/api/iam/passkey/registration/verify`,
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include',
+                body: JSON.stringify({
+                    credential: credentialData
+                })
+            }
+        );
+
+        const data = await verifyRes.json();
+
+        if (!verifyRes.ok) {
+            showError(data.error || 'Passkey registration failed');
+            return;
+        }
+
+        showError('Passkey created successfully.');
 
     } catch (e) {
         console.error('Passkey registration failed:', e);
-        showError(
-            e.name === 'NotAllowedError'
-                ? 'Passkey registration was cancelled.'
-                : 'Passkey registration failed.'
-        );
+
+        if (e.name === 'NotAllowedError') {
+            showError('Passkey registration was cancelled.');
+            return;
+        }
+
+        showError('Passkey registration failed.');
     }
 }
 
