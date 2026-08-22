@@ -17,8 +17,8 @@
                 Authenticate
             </button>
 
-            <button id="passkey-btn" class="admin-link" onclick="createPasskey()" hidden>
-                Create Passkey
+            <button id="passkey-btn" class="admin-link" onclick="openPasskeyMenu()" hidden>
+                Passkey menu
             </button>
 
             <button id="logout-btn" class="admin-link" onclick="logoutAdmin()">
@@ -91,6 +91,29 @@
                 <button class="auth-cancel" onclick="closeAuthModal()">
                     Cancel
                 </button>
+            </div>
+        </div>
+
+        <div id="passkey-modal" class="auth-modal">
+            <div class="auth-modal-content">
+
+                <h2>Your Passkeys</h2>
+
+                <div id="passkey-list" class="passkey-list"></div>
+
+                <button
+                        class="auth-provider"
+                        onclick="createPasskeyFromMenu()">
+                    <span>🔐</span>
+                    <span>Create new Passkey</span>
+                </button>
+
+                <button
+                        class="auth-cancel"
+                        onclick="closePasskeyMenu()">
+                    Cancel
+                </button>
+
             </div>
         </div>
     </div>

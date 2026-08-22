@@ -15,7 +15,7 @@ The frontend is completely separated from the backend. A lightweight frontend is
 - GitHub authentication resolves the user's **`primary verified email`**, allowing users with private email visibility to authenticate successfully.
 - OTP authentication is available only for registered users. A **6-digit verification code** is sent to the user's email, is valid for **5 minutes**, and can be used only once.
 - Passkey authentication uses the **WebAuthn standard** and supports passwordless authentication using a device, platform authenticator, security key, or another supported passkey provider.
-- Authenticated users can register multiple Passkeys for their account and use them for subsequent authentication.
+- Authenticated users can register multiple Passkeys for their account and manage them by deleting their own registered Passkeys from the frontend.
 - Passkey credentials are stored in the database, while the private key remains on the user's device or Passkey provider.
 - After successful authentication, a custom domain event is dispatched, triggering a login notification email to the user.
 - After successful login, a JWT token is issued and stored in `HttpOnly cookies` (access + refresh flow).

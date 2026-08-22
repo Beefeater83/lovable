@@ -645,6 +645,7 @@ async function createPasskey() {
         }
 
         showError('Passkey created successfully.');
+        await openPasskeyMenu();
 
     } catch (e) {
         console.error('Passkey registration failed:', e);
@@ -657,6 +658,97 @@ async function createPasskey() {
         showError('Passkey registration failed.');
     }
 }
+
+async function loadPasskeys() {
+    const res = await fetch(`${API_BASE}/api/iam/passkeys`, {
+        credentials: 'include'
+    });
+
+    if (!res.ok) {
+        return [];
+    }
+
+    return await res.json();
+}
+
+async function deletePasskey(id) {
+    clearError();
+
+    const res = await fetch(`${API_BASE}/api/iam/passkeys/${id}`, {
+        method: 'DELETE',
+        credentials: 'include'
+    });
+
+    if (!res.ok) {
+        const data = await res.json();
+        showError(data.error || 'Failed to delete Passkey');
+        return;
+    }
+
+    await openPasskeyMenu();
+}
+
+async function openPasskeyMenu() {
+    const modal = document.getElementById('passkey-modal');
+    const list = document.getElementById('passkey-list');
+
+    modal.classList.add('show');
+
+    list.innerHTML = '<div>Loading...</div>';
+
+    try {
+        const res = await fetch(`${API_BASE}/api/iam/passkeys`, {
+            credentials: 'include'
+        });
+
+        if (!res.ok) {
+            list.innerHTML = '<div>Failed to load Passkeys.</div>';
+            return;
+        }
+
+        const passkeys = await res.json();
+
+        if (passkeys.length === 0) {
+            list.innerHTML = '<div>No Passkeys registered.</div>';
+            return;
+        }
+
+        list.innerHTML = passkeys.map(passkey => `
+            <div class="passkey-item">
+                <div class="passkey-info">
+                    <div class="passkey-name">
+                        ${passkey.name}
+                    </div>
+
+                    <div class="passkey-date">
+                        Added: ${new Date(passkey.createdAt).toLocaleDateString()}
+                    </div>
+                </div>
+
+                <button
+                        class="passkey-delete"
+                        onclick="deletePasskey(${passkey.id})">
+                    Delete
+                </button>
+            </div>
+        `).join('');
+
+    } catch (e) {
+        console.error('Failed to load Passkeys:', e);
+        list.innerHTML = '<div>Failed to load PassKeys.</div>';
+    }
+}
+
+function closePasskeyMenu() {
+    document.getElementById('passkey-modal').classList.remove('show');
+}
+
+async function createPasskeyFromMenu() {
+    closePasskeyMenu();
+    await createPasskey();
+}
+
+
 
 checkLoginResult();
 updateAuthButtons();

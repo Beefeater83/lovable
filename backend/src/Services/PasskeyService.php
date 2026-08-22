@@ -122,7 +122,8 @@ class PasskeyService
         User $user,
         array|string $credentialData,
         ?string $customName,
-        string $host
+        string $host,
+        string $userAgent
     ): Passkey {
         $cacheKey = 'passkey_reg_options_user_' . $user->getId();
         $item = $this->cache->getItem($cacheKey);
@@ -178,9 +179,8 @@ class PasskeyService
                 . $e->getMessage(), 0, $e);
         }
 
-        $name = (!empty($customName) && trim($customName) !== '')
-            ? trim($customName)
-            : 'Passkey ' . (new \DateTimeImmutable())->format('Y-m-d H:i');
+        $client = $this->detectClient($userAgent);
+        $name ??= $client['os'] . ' · ' . $client['browser'];
 
         $passkey = $this->credentialMapper->fromCredentialRecord($credentialRecord, $user, $name);
         $this->entityManager->persist($passkey);
@@ -405,5 +405,32 @@ class PasskeyService
         return new AttestationStatementSupportManager([
             new NoneAttestationStatementSupport(),
         ]);
+    }
+
+    private function detectClient(string $userAgent): array
+    {
+        $os = match (true) {
+            str_contains($userAgent, 'iPhone') => 'iOS',
+            str_contains($userAgent, 'iPad') => 'iPadOS',
+            str_contains($userAgent, 'Android') => 'Android',
+            str_contains($userAgent, 'Macintosh') => 'macOS',
+            str_contains($userAgent, 'Windows') => 'Windows',
+            str_contains($userAgent, 'Linux') => 'Linux',
+            default => 'Unknown OS',
+        };
+
+        $browser = match (true) {
+            str_contains($userAgent, 'Edg/') => 'Edge',
+            str_contains($userAgent, 'OPR/') => 'Opera',
+            str_contains($userAgent, 'Firefox/') => 'Firefox',
+            str_contains($userAgent, 'Chrome/') => 'Chrome',
+            str_contains($userAgent, 'Safari/') => 'Safari',
+            default => 'Unknown browser',
+        };
+
+        return [
+            'os' => $os,
+            'browser' => $browser
+        ];
     }
 }

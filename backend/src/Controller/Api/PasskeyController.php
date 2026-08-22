@@ -71,11 +71,14 @@ class PasskeyController extends AbstractController
             $credentialData = $payload['credential'] ?? $payload;
             $name = isset($payload['name']) && is_string($payload['name']) ? $payload['name'] : null;
 
+            $userAgent = $request->headers->get('User-Agent', '');
+
             $passkey = $this->passkeyService->verifyRegistration(
                 $user,
                 $credentialData,
                 $name,
-                $request->getHost()
+                $request->getHost(),
+                $userAgent
             );
 
             return $this->json([
