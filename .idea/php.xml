@@ -169,6 +169,12 @@
       <path value="$PROJECT_DIR$/backend/vendor/gedmo/doctrine-extensions" />
       <path value="$PROJECT_DIR$/backend/vendor/stof/doctrine-extensions-bundle" />
       <path value="$PROJECT_DIR$/backend/vendor/league/oauth2-github" />
+      <path value="$PROJECT_DIR$/backend/vendor/web-auth/webauthn-lib" />
+      <path value="$PROJECT_DIR$/backend/vendor/web-auth/cose-lib" />
+      <path value="$PROJECT_DIR$/backend/vendor/paragonie/constant_time_encoding" />
+      <path value="$PROJECT_DIR$/backend/vendor/brick/math" />
+      <path value="$PROJECT_DIR$/backend/vendor/spomky-labs/cbor-php" />
+      <path value="$PROJECT_DIR$/backend/vendor/spomky-labs/pki-framework" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="8.2">

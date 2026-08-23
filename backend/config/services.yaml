@@ -6,6 +6,12 @@
 parameters:
     upload_dir: '%kernel.project_dir%/public/uploads/products'
     frontend_url: '%env(FRONTEND_URL)%'
+    passkey_rp_id: '%env(default:default_passkey_rp_id:PASSKEY_RP_ID)%'
+    passkey_rp_name: '%env(default:default_passkey_rp_name:PASSKEY_RP_NAME)%'
+    passkey_origins: '%env(default:default_passkey_origins:PASSKEY_ORIGINS)%'
+    default_passkey_rp_id: 'localhost'
+    default_passkey_rp_name: 'Security'
+    default_passkey_origins: 'http://localhost,http://localhost:5173,http://127.0.0.1,http://127.0.0.1:5173,https://security.diakonov-it.com.ua'
 
 services:
     # default configuration for services in *this* file
@@ -67,3 +73,15 @@ services:
     App\EventListener\ProductBeforePatchListener:
         tags:
             - { name: kernel.event_listener, event: 'products.patch.before_persist',  method: onBeforePersist }
+
+    App\Services\PasskeyService:
+        arguments:
+            $rpId: '%passkey_rp_id%'
+            $rpName: '%passkey_rp_name%'
+            $allowedOrigins: '%passkey_origins%'
+            $logger: '@monolog.logger.security'
+
+    App\Controller\Api\PasskeyController:
+        arguments:
+            $logger: '@monolog.logger.security'
+

@@ -324,6 +324,7 @@ function loginWithGoogle() {
 
 async function updateAuthButtons() {
     const authBtn = document.getElementById('auth-btn');
+    const passkeyBtn = document.getElementById('passkey-btn');
     const logoutBtn = document.getElementById('logout-btn');
     const userSpan = document.getElementById('admin-user');
 
@@ -334,6 +335,7 @@ async function updateAuthButtons() {
     const data = await res.json();
 
     authBtn.hidden = data.authenticated;
+    passkeyBtn.hidden = !data.authenticated;
     logoutBtn.hidden = !data.authenticated;
 
     userSpan.textContent = data.authenticated
@@ -460,6 +462,293 @@ async function verifyOtp() {
 function setOtpMessage(message) {
     document.getElementById('otp-message').textContent = message;
 }
+
+/********************PASSKEY********************************/
+
+async function loginWithPasskey() {
+    clearError();
+
+    try {
+        const res = await fetch(`${API_BASE}/api/iam/passkey/authentication/options`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        const options = await res.json();
+
+        if (!res.ok) {
+            showError(options.error || 'Failed to start Passkey authentication');
+            return;
+        }
+
+        const credential = await navigator.credentials.get({
+            publicKey: decodeAuthenticationOptions(options)
+        });
+
+        const verifyRes = await fetch(`${API_BASE}/api/iam/passkey/authentication/verify`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include',
+            body: JSON.stringify({
+                credential: encodeCredential(credential)
+            })
+        });
+
+        const data = await verifyRes.json();
+
+        if (!verifyRes.ok) {
+            showError(data.error || 'Passkey authentication failed');
+            return;
+        }
+
+        closeAuthModal();
+        window.location.href = '/admin?login=success';
+
+    } catch (e) {
+        console.error('Passkey authentication failed:', e);
+        showError(
+            e.name === 'NotAllowedError'
+                ? 'Passkey authentication was cancelled.'
+                : 'Passkey authentication failed.'
+        );
+    }
+}
+
+function decodeAuthenticationOptions(options) {
+    options.challenge = base64urlToUint8Array(options.challenge);
+
+    if (options.allowCredentials) {
+        options.allowCredentials = options.allowCredentials.map(credential => ({
+            ...credential,
+            id: base64urlToUint8Array(credential.id)
+        }));
+    }
+
+    return options;
+}
+
+function encodeCredential(credential) {
+    return {
+        id: credential.id,
+        rawId: uint8ArrayToBase64url(new Uint8Array(credential.rawId)),
+        type: credential.type,
+        response: {
+            clientDataJSON: uint8ArrayToBase64url(
+                new Uint8Array(credential.response.clientDataJSON)
+            ),
+            authenticatorData: uint8ArrayToBase64url(
+                new Uint8Array(credential.response.authenticatorData)
+            ),
+            signature: uint8ArrayToBase64url(
+                new Uint8Array(credential.response.signature)
+            ),
+            userHandle: credential.response.userHandle
+                ? uint8ArrayToBase64url(new Uint8Array(credential.response.userHandle))
+                : null
+        }
+    };
+}
+
+function base64urlToUint8Array(base64url) {
+    const padding = '='.repeat((4 - base64url.length % 4) % 4);
+    const base64 = (base64url + padding)
+        .replace(/-/g, '+')
+        .replace(/_/g, '/');
+
+    return Uint8Array.from(atob(base64), c => c.charCodeAt(0));
+}
+
+function uint8ArrayToBase64url(bytes) {
+    let binary = '';
+
+    bytes.forEach(byte => {
+        binary += String.fromCharCode(byte);
+    });
+
+    return btoa(binary)
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_')
+        .replace(/=/g, '');
+}
+
+async function createPasskey() {
+    clearError();
+
+    try {
+        const optionsRes = await fetch(
+            `${API_BASE}/api/iam/passkey/registration/options`,
+            {
+                method: 'POST',
+                credentials: 'include'
+            }
+        );
+
+        const options = await optionsRes.json();
+
+        if (!optionsRes.ok) {
+            showError(options.error || 'Failed to start Passkey registration');
+            return;
+        }
+
+        options.challenge = base64urlToUint8Array(options.challenge);
+
+        options.user.id = base64urlToUint8Array(options.user.id);
+
+        if (options.excludeCredentials) {
+            options.excludeCredentials = options.excludeCredentials.map(credential => ({
+                ...credential,
+                id: base64urlToUint8Array(credential.id)
+            }));
+        }
+
+        const credential = await navigator.credentials.create({
+            publicKey: options
+        });
+
+        const credentialData = {
+            id: credential.id,
+            rawId: uint8ArrayToBase64url(new Uint8Array(credential.rawId)),
+            type: credential.type,
+            response: {
+                clientDataJSON: uint8ArrayToBase64url(
+                    new Uint8Array(credential.response.clientDataJSON)
+                ),
+                attestationObject: uint8ArrayToBase64url(
+                    new Uint8Array(credential.response.attestationObject)
+                )
+            }
+        };
+
+        const verifyRes = await fetch(
+            `${API_BASE}/api/iam/passkey/registration/verify`,
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include',
+                body: JSON.stringify({
+                    credential: credentialData
+                })
+            }
+        );
+
+        const data = await verifyRes.json();
+
+        if (!verifyRes.ok) {
+            showError(data.error || 'Passkey registration failed');
+            return;
+        }
+
+        showError('Passkey created successfully.');
+        await openPasskeyMenu();
+
+    } catch (e) {
+        console.error('Passkey registration failed:', e);
+
+        if (e.name === 'NotAllowedError') {
+            showError('Passkey registration was cancelled.');
+            return;
+        }
+
+        showError('Passkey registration failed.');
+    }
+}
+
+async function loadPasskeys() {
+    const res = await fetch(`${API_BASE}/api/iam/passkeys`, {
+        credentials: 'include'
+    });
+
+    if (!res.ok) {
+        return [];
+    }
+
+    return await res.json();
+}
+
+async function deletePasskey(id) {
+    clearError();
+
+    const res = await fetch(`${API_BASE}/api/iam/passkeys/${id}`, {
+        method: 'DELETE',
+        credentials: 'include'
+    });
+
+    if (!res.ok) {
+        const data = await res.json();
+        showError(data.error || 'Failed to delete Passkey');
+        return;
+    }
+
+    await openPasskeyMenu();
+}
+
+async function openPasskeyMenu() {
+    const modal = document.getElementById('passkey-modal');
+    const list = document.getElementById('passkey-list');
+
+    modal.classList.add('show');
+
+    list.innerHTML = '<div>Loading...</div>';
+
+    try {
+        const res = await fetch(`${API_BASE}/api/iam/passkeys`, {
+            credentials: 'include'
+        });
+
+        if (!res.ok) {
+            list.innerHTML = '<div>Failed to load Passkeys.</div>';
+            return;
+        }
+
+        const passkeys = await res.json();
+
+        if (passkeys.length === 0) {
+            list.innerHTML = '<div>No Passkeys registered.</div>';
+            return;
+        }
+
+        list.innerHTML = passkeys.map(passkey => `
+            <div class="passkey-item">
+                <div class="passkey-info">
+                    <div class="passkey-name">
+                        ${passkey.name}
+                    </div>
+
+                    <div class="passkey-date">
+                        Added: ${new Date(passkey.createdAt).toLocaleDateString()}
+                    </div>
+                </div>
+
+                <button
+                        class="passkey-delete"
+                        onclick="deletePasskey(${passkey.id})">
+                    Delete
+                </button>
+            </div>
+        `).join('');
+
+    } catch (e) {
+        console.error('Failed to load Passkeys:', e);
+        list.innerHTML = '<div>Failed to load PassKeys.</div>';
+    }
+}
+
+function closePasskeyMenu() {
+    document.getElementById('passkey-modal').classList.remove('show');
+}
+
+async function createPasskeyFromMenu() {
+    closePasskeyMenu();
+    await createPasskey();
+}
+
+
 
 checkLoginResult();
 updateAuthButtons();

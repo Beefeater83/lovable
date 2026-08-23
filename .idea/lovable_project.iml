@@ -156,6 +156,12 @@
       <excludeFolder url="file://$MODULE_DIR$/backend/vendor/gedmo/doctrine-extensions" />
       <excludeFolder url="file://$MODULE_DIR$/backend/vendor/stof/doctrine-extensions-bundle" />
       <excludeFolder url="file://$MODULE_DIR$/backend/vendor/league/oauth2-github" />
+      <excludeFolder url="file://$MODULE_DIR$/backend/vendor/brick/math" />
+      <excludeFolder url="file://$MODULE_DIR$/backend/vendor/paragonie/constant_time_encoding" />
+      <excludeFolder url="file://$MODULE_DIR$/backend/vendor/spomky-labs/cbor-php" />
+      <excludeFolder url="file://$MODULE_DIR$/backend/vendor/spomky-labs/pki-framework" />
+      <excludeFolder url="file://$MODULE_DIR$/backend/vendor/web-auth/cose-lib" />
+      <excludeFolder url="file://$MODULE_DIR$/backend/vendor/web-auth/webauthn-lib" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
