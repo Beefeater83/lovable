@@ -58,7 +58,6 @@ class PasskeyServiceTest extends TestCase
         $user->setName('Alice');
         $user->setEmail('alice@example.com');
 
-        // Mock reflection to set id
         $ref = new \ReflectionProperty(User::class, 'id');
         $ref->setValue($user, 42);
 
@@ -153,7 +152,13 @@ class PasskeyServiceTest extends TestCase
         $this->expectException(PasskeyValidationException::class);
         $this->expectExceptionMessage('Registration challenge expired or invalid');
 
-        $this->service->verifyRegistration($user, '{}', 'MacBook', 'localhost');
+        $this->service->verifyRegistration(
+            $user,
+            '{}',
+            'MacBook',
+            'localhost',
+            'Mozilla/5.0'
+        );
     }
 
     public function testListPasskeys(): void
