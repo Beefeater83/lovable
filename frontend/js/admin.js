@@ -75,8 +75,8 @@ function renderRow(p) {
     <div class="admin-row">
       <img src="${API_BASE}/uploads/products/${p.imagePath}" />
       ${isEditing
-        ? `<input class="admin-input name-input" value="${p.name}" data-id="${p.id}" />`
-        : `<div class="admin-name">${p.name}</div>`}
+        ? `<input class="admin-input name-input" value="${escapeHtml(p.name)}" data-id="${p.id}" />`
+        : `<div class="admin-name">${escapeHtml(p.name)}</div>`}
       ${isEditing
         ? `<input type="number" class="admin-input price-input" value="${p.price}" data-id="${p.id}" />`
         : `<div class="admin-price">$${Number(p.price).toFixed(2)}</div>`}
@@ -461,6 +461,16 @@ async function verifyOtp() {
 
 function setOtpMessage(message) {
     document.getElementById('otp-message').textContent = message;
+}
+
+function escapeHtml(value) {
+    return String(value).replace(/[&<>"']/g, char => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+    }[char]));
 }
 
 /********************PASSKEY********************************/

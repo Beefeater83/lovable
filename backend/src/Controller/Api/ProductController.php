@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Controller\Api;
 
 use App\Entity\Product;
-use App\Entity\User;
 use App\Repository\ProductRepository;
 use App\Services\ImageStorageService;
 use Doctrine\ORM\EntityManagerInterface;

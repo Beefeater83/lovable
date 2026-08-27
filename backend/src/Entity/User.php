@@ -26,7 +26,7 @@ class User implements UserInterface
     #[Assert\Length(max: 255)]
     private string $name = '';
 
-    #[ORM\Column(length: 255, nullable: false, unique: false)]
+    #[ORM\Column(length: 255, unique: true, nullable: false)]
     #[Assert\NotBlank(groups: ['create'])]
     #[Assert\Length(max: 255)]
     #[Groups(['create', 'patch'])]
