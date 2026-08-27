@@ -60,10 +60,10 @@ function renderProducts(items) {
     elements.grid.innerHTML = items
         .map(p => `
       <div class="product-card">
-        <img src="${API_BASE}/uploads/products/${p.imagePath}" alt="${p.name}" loading="lazy" />
+        <img src="${API_BASE}/uploads/products/${p.imagePath}" alt="${escapeHtml(p.name)}" loading="lazy" />
         <div class="product-info">
           <div class="product-category">${p.category}</div>
-          <div class="product-name">${p.name}</div>
+          <div class="product-name">${escapeHtml(p.name)}</div>
           <div class="product-price">$${Number(p.price).toFixed(2)}</div>
         </div>
       </div>
@@ -86,6 +86,16 @@ async function fetchProducts() {
     } catch (error) {
         showMessage(`Error loading products: ${error.message}`, true);
     }
+}
+
+function escapeHtml(value) {
+    return String(value).replace(/[&<>"']/g, char => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+    }[char]));
 }
 
 renderFilters();
